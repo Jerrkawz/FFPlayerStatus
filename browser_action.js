@@ -1,28 +1,4 @@
-(function() {
-  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-  ga.src = 'https://ssl.google-analytics.com/ga.js';
-  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-})();
-
-
-var _gaq = _gaq || [];
-var extensionId = chrome.i18n.getMessage("@@extension_id");
-if (extensionId === 'ebaejgmbadoagcjkhimjifjhlckdmmbi') {
-	_gaq.push(['_setAccount', 'UA-42785662-1']);
-}
-_gaq.push(['_trackPageview']);
-
-
-var hardReset = function() {
-	$('#loader').show();
-	$('.sync-text').hide();
-	chrome.extension.sendMessage({method: "hardReset"}, function(response) {
-		$('#loader').hide();
-		$('.sync-text').show();
-    });
-};
-
-var searchInput = function(event) {
+function searchInput(event) {
 	var value = $(event.target).val().trim().toLowerCase();
 	$('#player-results').empty();
 	if (value.length < 3) {
@@ -32,7 +8,6 @@ var searchInput = function(event) {
 	$('#player-results').append('<div class="loading-spinner icon-refresh icon-spin icon-large"></div>');
 
 	chrome.extension.sendMessage({method: 'playerSearch', query: value}, function(response) {
-		_gaq.push(['_trackEvent', 'Search', value]);
 		var container = $('#player-results');
 		container.empty();
 
@@ -130,8 +105,9 @@ var searchInput = function(event) {
 			}
 		});
 	});
-};
-var keydownHandler = function (event) {
+}
+
+function keydownHandler(event) {
 	var rows = $(".search-player");
 	var numRows = rows.length;
 	if (event.which === 13) { // enter
@@ -173,18 +149,13 @@ var keydownHandler = function (event) {
 			scrollToPlayer($(rows[0]));
 		}
 	}
-};
+}
 
-var scrollToPlayer = function (playerElement) {
+function scrollToPlayer(playerElement) {
 	playerElement[0].scrollIntoView(true);
-	// var offsetTop = playerElement.position().top;
-	// var elementHeight = playerElement.height();
-	// if ($("#player-results").offset().top + $("#player-results").height() < (offsetTop + elementHeight) || offsetTop < $("#players-results").scrollTop()) {
-	// 	$("#player-results").scrollTop(offsetTop);
-	// }
-};
+}
 
-var getTextForPlayerLeagueStatus = function (status) {
+function getTextForPlayerLeagueStatus(status) {
 	var statusText = "";
 	switch (status) {
 		case 1:
@@ -198,9 +169,9 @@ var getTextForPlayerLeagueStatus = function (status) {
 			break;
 	}
 	return statusText;
-};
+}
 
-var getIconClassForPlayerLeagueStatus = function (status) {
+function getIconClassForPlayerLeagueStatus(status) {
 	var iconClass = "";
 	switch (status) {
 		case 1:
@@ -214,14 +185,14 @@ var getIconClassForPlayerLeagueStatus = function (status) {
 			break;
 	}
 	return iconClass;
-};
-var loadSettings = function (event) {
+}
+
+function loadSettings(event) {
 	chrome.extension.sendMessage({method: "getSettings"}, function (response) {
 		var inlineDom = $('<div class=""><label><input id="inline-availability-check" type="checkbox" name="inline-availability" value="inline" />Show availability next to name.</label></div>');
 		if (!response || response.inline === true) {
 			$(inlineDom).find("#inline-availability-check").attr("checked", "checked");
 		}
-		//$(".browser-action-footer").prepend(inlineDom);
 		$("#inline-availability-check").change(function (event) {
 	    	var value = {
 	    		inline: $(event.currentTarget).is(":checked")
@@ -230,17 +201,21 @@ var loadSettings = function (event) {
 	    	_gaq.push(['_trackEvent', 'InlineSetting', value.inline]);
 	    });
 	});
-};
+}
 
-document.addEventListener('DOMContentLoaded', function () {
-    // document.getElementById('sync').addEventListener('click', hardReset);
-    $('#search').on("keydown", keydownHandler);
-    $('#search').on('search', searchInput);
-    $("#settings-btn").click(function (event) {
-		window.open(chrome.extension.getURL("settings.html"), "_blank");
+
+function init() {
+	document.addEventListener('DOMContentLoaded', function () {
+		$('#search').on("keydown", keydownHandler);
+		$('#search').on('search', searchInput);
+		$("#settings-btn").click(function (event) {
+			window.open(chrome.extension.getURL("settings.html"), "_blank");
+		});
+		$("#refresh-btn").click(function (event) {
+			location.reload();
+		});
+		loadSettings();
 	});
-	$("#refresh-btn").click(function (event) {
-		location.reload();
-	});
-    loadSettings();
-})
+}
+
+init();

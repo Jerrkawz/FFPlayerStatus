@@ -23,39 +23,9 @@
      "matches": ["<all_urls>"],
      "css": ["css/main.css", "css/font-awesome.min.css"],
      "js": [
-       "lib/jquery-2.0.3.min.js",
-       "lib/replaceText.min.js",
-       "lib/handlebars.js",
-       "lib/underscore-min.js",
-       "templates.js",
        "parser.js"
      ],
      "run_at": "document_end"
-   },
-   {
-     "matches": ["http://games.espn.go.com/*"],
-     "js": [
-        "lib/jquery-2.0.3.min.js",
-        "lib/replaceText.min.js"
-      ],
-     "run_at": "document_end",
-     "all_frames": true
-   },
-   {
-      "matches": ["http://games.espn.go.com/frontpage/football"],
-      "js": [
-        "lib/jquery-2.0.3.min.js",
-        "lib/underscore-min.js"
-      ],
-      "run_at": "document_end"
-   },
-   {
-      "matches": ["http://football.fantasysports.yahoo.com/"],
-      "js": [
-        "lib/jquery-2.0.3.min.js",
-        "lib/underscore-min.js"
-      ],
-      "run_at": "document_end"
    }
  ],
  "web_accessible_resources": [

@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 
-var execa = require('execa');
-var shell = require('shelljs');
-var path = require('path');
-var chalk = require('chalk');
-var minify = require('html-minifier').minify;
+const execa = require('execa');
+const shell = require('shelljs');
+const path = require('path');
+const chalk = require('chalk');
+const minify = require('html-minifier').minify;
+const CleanCSS = require('clean-css');
+const fs = require('fs');
+const cssCleaner = new CleanCSS({});
 
 
 // Create directories
@@ -42,16 +45,10 @@ build();
 shell.cp('manifest.json', 'dist/manifest.json');
 
 function compileCss(fileName) {
-    const newFile = fileName.split(path.sep).slice(-1)[0];
-    execa.sync('cleancss',[
-        '-o',
-        `dist/css/${newFile}`,
-        fileName
-      ],
-      {
-        stdio: 'inherit',
-      }
-    );
+    const newFile = fileName.split('/').slice(-1)[0];
+    const file = fs.readFileSync(fileName, 'utf-8');
+    const output = cssCleaner.minify(file);
+    fs.writeFileSync(`dist/css/${newFile}`, output.styles, 'utf-8');
 }
 
 //TODO support non root html files
@@ -72,7 +69,7 @@ function minifyHtml(fileName) {
       removeStyleLinkTypeAttributes: true,
     };
 
-    const newFileName = fileName.split(path.sep).slice(-1)[0];
+    const newFileName = fileName.split('/').slice(-1)[0];
     const file = fs.readFileSync(fileName, 'utf8');
     const minfile = minify(file, default_options);
 

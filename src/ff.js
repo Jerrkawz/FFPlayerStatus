@@ -1,5 +1,5 @@
-import Espn from '/sites/espn';
-import Yahoo from '/sites/yahoo';
+import Espn from './sites/espn';
+import Yahoo from './sites/yahoo';
 
 const FREE_AGENT = 1;
 const DROP = 2;

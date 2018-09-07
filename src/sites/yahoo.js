@@ -1,6 +1,6 @@
 import Site from './site';
 import Player from '../player';
-import { $ } from 'jquery';
+import $ from 'jquery';
 
 export default class Yahoo extends Site {
   constructor(ff) {

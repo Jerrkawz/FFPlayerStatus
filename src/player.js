@@ -1,4 +1,4 @@
-import { $ } from 'jquery';
+import $ from 'jquery';
 
 export default class Player {
   constructor(id, name, team, pos, leagueId, site) {

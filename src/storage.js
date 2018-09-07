@@ -1,29 +1,31 @@
 /*
-Just a helper object for dealing with local storage
+  Just a helper object for dealing with local storage
 */
-
-
-this.FFStorage = {
-  get: function (user, key) {
+export default class FFStorage {
+  get(user, key) {
     if (localStorage[user] === undefined) {
       return undefined;
     }
 
-    var userGetObj = JSON.parse(localStorage[user]);
+    const userGetObj = JSON.parse(localStorage[user]);
     return userGetObj[key];
-  },
-  set: function (user, key, value) {
-    var userObj = {};
+  }
+
+  set(user, key, value) {
+    let userObj = {};
     if (localStorage[user] !== undefined) {
       userObj = JSON.parse(localStorage[user]);
     }
     userObj[key] = value;
     localStorage[user] = JSON.stringify(userObj);
-  },
-  setValue: function(key, value) {
-    localStorage[key] = JSON.stringify(value);
-  },
-  getValue: function(key, value) {
-    return localStorage[key] ? JSON.parse(localStorage[key]) : null;
   }
-};
+
+  getValue(key) {
+    return localStorage[key] ? JSON.parse(localStorage[key]) : null;
+
+  }
+
+  setValue(key, value) {
+    localStorage[key] = JSON.stringify(value);
+  }
+}

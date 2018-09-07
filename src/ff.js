@@ -1,216 +1,196 @@
-if (!window.ff) {
-	window.ff = {};
-}
+import Espn from '/sites/espn';
+import Yahoo from '/sites/yahoo';
 
-var FREE_AGENT = 1;
-var DROP = 2;
-var TRADE = 3;
+const FREE_AGENT = 1;
+const DROP = 2;
+const TRADE = 3;
 
-// Init FF object
-ff.FF = function(storage) {
-	this.storage = storage;
+export default class FF {
+  constructor(storage) {
+    this.storage = storage;
 
-	this.espn = new ff.Espn(this);
-	this.yahoo = new ff.Yahoo(this);
-	this.customMappings = this.storage.get("global", "nicknames") || {};
-};
+    this.espn = new Espn(this);
+    this.yahoo = new Yahoo(this);
+    this.customMappings = this.storage.get("global", "nicknames") || {};
+  }
 
-// Fetch leagues from localstorage
-ff.FF.prototype.getLeaguesFromStorage = function() {
-	var leagues = [];
-	leagues = leagues.concat(this.espn.getLeaguesFromStorage());
-	leagues = leagues.concat(this.yahoo.getLeaguesFromStorage());
-	return leagues;
-};
+  getLeaguesFromStorage() {
+    let leagues = [];
+    leagues = leagues.concat(this.espn.getLeaguesFromStorage());
+    leagues = leagues.concat(this.yahoo.getLeaguesFromStorage());
+    return leagues;
+  }
 
-// Parses team info from URL
-// Used by:
-// - fetchTakenPlayersForLeague
-ff.FF.prototype.getUrlVars = function(url) {
-	var hash;
-    var vars = {};
-    var hashes = url.slice(url.indexOf('?') + 1).split('&');
-    for(var i = 0; i < hashes.length; i++)
-    {
-        hash = hashes[i].split('=');
-        // vars.push(hash[0]);
-        vars[hash[0]] = hash[1];
+  /** 
+   * Parses team info from URL
+   * Used by: fetchTakenPlayersForLeague
+   */
+  getUrlVars(url) {
+    let hash;
+    const vars = {};
+    const hashes = url.slice(url.indexOf('?') + 1).split('&');
+    for(let i = 0; i < hashes.length; i++) {
+      hash = hashes[i].split('=');
+      vars[hash[0]] = hash[1];
     }
     return vars;
-};
+  }
 
-// Refresh taken status for player
-ff.FF.prototype.updatePlayerStatus = function(player) {
-	var leagues = this.getLeaguesFromStorage();
-	player.leagueStatus.length = 0;
-	for (var i = 0; i < leagues.length; ++i) {
-		var league = leagues[i];
-		var leagueId = league.leagueId;
-		var teamId = league.teamId;
+  /**
+   * Refresh taken status for player
+   * @param {Object} player 
+   */
+  updatePlayerStatus(player) {
+    const leagues = this.getLeaguesFromStorage();
+    player.leagueStatus.length = 0;
+    for (let i = 0; i < leagues.length; ++i) {
+      const league = leagues[i];
+      const leagueId = league.leagueId;
+      const teamId = league.teamId;
+  
+      const playerStatus = {};
+      playerStatus.site = league.site;
+      playerStatus.leagueId = leagueId;
+      playerStatus.leagueName = leagues[i].leagueName;
+  
+      let idForSite;
+      if (league.site === player.site) {
+        idForSite = player.id;
+      } else {
+        idForSite = player.otherIds[league.site];
+      }
+      const ownedByTeamId = league.playerIdToTeamIndex[idForSite];
+  
+      if (ownedByTeamId) {
+        playerStatus.ownedByTeamName = league.shortNames[ownedByTeamId];
+        if (ownedByTeamId === teamId) {
+          playerStatus.status = DROP;
+          playerStatus.actionUrl = this[league.site].buildDropUrl(idForSite, league);
+        } else {
+          playerStatus.status = TRADE;
+          playerStatus.actionUrl = this[league.site].buildTradeUrl(idForSite, ownedByTeamId, league);
+        }
+  
+        player.leagueStatus.push(playerStatus);
+      } else {
+        playerStatus.status = FREE_AGENT;
+        playerStatus.actionUrl = this[league.site].buildFreeAgentUrl(idForSite, league);
+        player.leagueStatus.push(playerStatus);
+      }
+    }
+  }
 
-		var playerStatus = new PlayerStatus();
-		playerStatus.site = league.site;
-		playerStatus.leagueId = leagueId;
-		playerStatus.leagueName = leagues[i].leagueName;
+  /**
+   * Look up player by name
+   * @param {Object} searchSpace 
+   * @param {String} playerName 
+   * @param {Function} callback 
+   */
+  playerSearch(searchSpace, playerName, callback) {
+    const players = Object.values(searchSpace);
+    const validPlayers = players.filter(player => {
+      return player.name.toLowerCase().indexOf(playerName) >= 0;
+    });
+  
+    return callback(validPlayers);
+  }
 
-		var idForSite;
-		if (league.site === player.site) {
-			idForSite = player.id;
-		} else {
-			idForSite = player.otherIds[league.site];
-		}
-		var ownedByTeamId = league.playerIdToTeamIndex[idForSite];
+  /**
+   * Get player from list by ID and update status
+   * @param {Integer} playerId 
+   */
+  getPlayerById(playerId) {
+    const player = window.listOfPlayers[playerId];
+    if (!player.id) {
+      return;
+    }
+  
+    this.updatePlayerStatus(player);
+    return player;
+  }
 
-		if (ownedByTeamId) {
-			playerStatus.ownedByTeamName = league.shortNames[ownedByTeamId];
-			if (ownedByTeamId === teamId) {
-				playerStatus.status = DROP;
-				playerStatus.actionUrl = this[league.site].buildDropUrl(idForSite, league);
-			} else {
-				playerStatus.status = TRADE;
-				playerStatus.actionUrl = this[league.site].buildTradeUrl(idForSite, ownedByTeamId, league);
-			}
+  /**
+   * Fetch user settings from local storage
+   */
+  getUserSettings() {
+    return this.storage.get("global", "settings");
+  }
 
-			player.leagueStatus.push(playerStatus);
-		} else {
-			playerStatus.status = FREE_AGENT;
-			playerStatus.actionUrl = this[league.site].buildFreeAgentUrl(idForSite, league);
-			player.leagueStatus.push(playerStatus);
-		}
-	}
-};
+  /**
+   * Save user settings to local storage
+   * @param {Object} settingObj 
+   */
+  setUserSettings(settingObj) {
+    let currSettings = this.getUserSettings();
+    if (!currSettings) {
+      currSettings = {};
+    }
+  
+    const newSettingsKeys = Object.keys(settingObj);
+    for (let i = newSettingsKeys.length - 1; i >= 0; i--) {
+      currSettings[newSettingsKeys[i]] = settingObj[newSettingsKeys[i]];
+    }
+  
+    this.storage.set("global", "settings", currSettings);
+  }
 
-// Lookup player by name
-ff.FF.prototype.playerSearch = function(searchSpace, playerName, callback) {
-	var players = _.values(searchSpace);
-	var names = _.keys(searchSpace);
-	var validPlayers = _.filter(players, function(player) {
-		return player.name.toLowerCase().indexOf(playerName) >= 0;
-	});
+  /**
+   * Add a blacklist term and save to localstorage
+   * @param {String} url 
+   */
+  addBlacklistURL(url) {
+    const currSettings = this.getUserSettings();
+    let blacklist = currSettings === undefined ? [] : currSettings['blacklist'];
+    if(blacklist === undefined) {
+      blacklist = [];
+    }
+  
+    if(blacklist.indexOf(url) === -1) {
+      blacklist.push(url);
+    }
+    this.setUserSettings({'blacklist' : blacklist});
+  }
 
-	return callback(validPlayers);
-};
+  /**
+   * Remove blacklist term
+   * @param {String} url 
+   */
+  removeBlacklistURL(url) {
+    const currSettings = this.getUserSettings();
+    let blacklist = currSettings === undefined ? [] : currSettings['blacklist'];
+    if(blacklist === undefined) {
+      blacklist = [];
+    }
+    const idx = blacklist.indexOf(url);
+    if(idx !== -1) {
+      blacklist.splice(idx, 1);
+    }
+    this.setUserSettings({'blacklist' : blacklist});
+  }
 
-// Get player from list by ID and update status
-ff.FF.prototype.getPlayerById = function(playerId) {
-	var player = window.listOfPlayers[playerId];
-	if (!player.id) {
-		return;
-	}
+  /**
+   * Add nickname to player id
+   * @param {String} nickname 
+   * @param {Integer} playerId 
+   */
+  addCustomMapping(nickname, playerId) {
+    this.customMappings[nickname] = playerId;
+    this.storage.set("global", "nicknames", this.customMappings);
+  }
 
-	this.updatePlayerStatus(player);
-	return player;
-};
+  /**
+   * Remove player nickname
+   * @param {String} nickname 
+   */
+  removeCustomMapping(nickname) {
+    delete this.customMappings[nickname];
+    this.storage.set("global", "nicknames", this.customMappings);
+  }
 
-// Fetch user settings from localstorage
-ff.FF.prototype.getUserSettings = function () {
-	return this.storage.get("global", "settings");
-};
-
-// Save user settings to localstorage
-ff.FF.prototype.setUserSettings = function(settingObj) {
-	var currSettings = this.getUserSettings();
-	if (!currSettings) {
-		currSettings = {};
-	}
-
-	var newSettingsKeys = _.keys(settingObj);
-	for (var i = newSettingsKeys.length - 1; i >= 0; i--) {
-		currSettings[newSettingsKeys[i]] = settingObj[newSettingsKeys[i]];
-	}
-
-	this.storage.set("global", "settings", currSettings);
-};
-
-// Add a blacklist term and save to localstorage
-ff.FF.prototype.addBlacklistURL = function(url) {
-	var currSettings = this.getUserSettings();
-	var blacklist = currSettings===undefined ? [] : currSettings['blacklist'];
-	if(blacklist===undefined) {
-		blacklist = [];
-	}
-
-	if(blacklist.indexOf(url) == -1) {
-		blacklist.push(url);
-	}
-	this.setUserSettings({'blacklist' : blacklist});
-};
-
-// Remove a blacklist term
-ff.FF.prototype.removeBlacklistURL = function(url) {
-	var currSettings = this.getUserSettings();
-	var blacklist = currSettings===undefined ? [] : currSettings['blacklist'];
-	if(blacklist===undefined) {
-		blacklist = [];
-	}
-	var idx = blacklist.indexOf(url);
-	if(idx !== -1) {
-		blacklist.splice(idx, 1);
-	}
-	this.setUserSettings({'blacklist' : blacklist});
-};
-
-// Add a nickname and save to localstorage
-ff.FF.prototype.addCustomMapping = function(nickname, playerId) {
-	this.customMappings[nickname] = playerId;
-	this.storage.set("global", "nicknames", this.customMappings);
-};
-
-ff.FF.prototype.removeCustomMapping = function(nickname, playerId) {
-	delete this.customMappings[nickname];
-	this.storage.set("global", "nicknames", this.customMappings);
-};
-
-ff.FF.prototype.getCustomMapping = function() {
-	return this.customMappings;
-};
-
-PlayerStatus = function() {
-	this.leagueId;
-	this.leagueName;
-	this.status;
-	this.site;
-	this.actionUrl;
-	this.ownedByTeamName;
-};
-
-Player = function(id, name, team, pos, leagueId, site) {
-	this.id = id;
-	this.name = name;
-	this.leagueIds;
-	if (!this.name) {
-		return;
-	}
-	this.team = team;
-	var year = new Date().getFullYear();
-	if(site === 'espn') {
-		$.ajax({
-			url: "http://games.espn.com/ffl/format/playerpop/overview?leagueId=" + leagueId + "&playerId=" + this.id + "&playerIdType=playerId&seasonId=" + year + "&xhr=1",
-			type: "GET",
-			success: function (response) {
-				this.profileImage = $(response).find('.mugshot img').attr('src');
-			}.bind(this)
-		});
-		this.playerProfileUrl = 'http://espn.go.com/nfl/player/_/id/' + this.id + '/';
-	}
-	else if (site === 'yahoo') {
-		this.playerProfileUrl = 'http://sports.yahoo.com/nfl/players/' + this.id;
-		$.ajax({
-			url: this.playerProfileUrl,
-			type: "GET",
-			success: function (response) {
-				var img = $(response).find('.player-image > img').css('background-image');
-				if (img !== undefined) {
-					img = img.replace('url(', '').replace(')', '').replace(/\"/gi, "");
-				}
-				this.profileImage = img;
-			}.bind(this)
-		});
-		// this.profileImage = 'http://l1.yimg.com/bt/api/res/1.2/KP9FQm7CsLax5MVD020j_A--/YXBwaWQ9eW5ld3NfbGVnbztmaT1maWxsO2g9MjMwO3E9NzU7dz0zNDU-/https://s.yimg.com/xe/i/us/sp/v/nfl_cutout/players_l/20161007/' + this.id + '.png'
-	}
-	this.site = site;
-	this.otherIds = {};
-	this.leagueStatus = [];
-	this.positions = pos;
-	// this.status = status;
-};
+  /**
+   * Return all of the custom mappings
+   */
+  getCustomMapping() {
+    return this.customMappings;
+  }
+}

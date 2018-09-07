@@ -9,12 +9,16 @@
   "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.0.0",
+    "babel-eslint": "^9.0.0",
     "chalk": "^2.4.1",
     "clean-css": "^4.2.1",
+    "eslint": "^5.5.0",
     "execa": "^1.0.0",
     "html-minifier": "^3.5.20",
+    "jquery": "^3.3.1",
     "npm-watch": "^0.3.0",
     "path": "^0.12.7",
+    "rimraf": "^2.6.2",
     "rollup": "^0.65.0",
     "rollup-plugin-alias": "^1.4.0",
     "rollup-plugin-babel": "^4.0.2",
@@ -29,7 +33,7 @@
     "vue": "^2.5.17",
     "vue-template-compiler": "^2.5.17"
   },
-  "watch" : {
+  "watch": {
     "build:dev": {
       "patterns": [
         "css",
@@ -42,7 +46,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:dev": "node ./build/build.js",
-    "build:dev:watch": "npm-watch build:dev"
+    "build:dev:watch": "npm-watch build:dev",
+    "clean": "rimraf dist"
   },
   "repository": {
     "type": "git",

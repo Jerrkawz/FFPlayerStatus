@@ -46,7 +46,7 @@ export default class Espn  extends Site {
           const owningTeamEl = $(currPlayerRow).find('td:nth-child(3) a');
 
           if ($(owningTeamEl).length > 0) {
-            const owningTeamUrllets = this.ff.getUrllets($(owningTeamEl).attr('href'));
+            const owningTeamUrllets = this.ff.getUrlVars($(owningTeamEl).attr('href'));
             const owningTeamId = owningTeamUrllets.teamId;
             this.addPlayerMapping(league, currPlayerId, owningTeamId);
           }

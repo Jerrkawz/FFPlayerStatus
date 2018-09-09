@@ -1,13 +1,14 @@
 import Espn from './sites/espn';
 import Yahoo from './sites/yahoo';
+import FFStorage from './storage';
 
 const FREE_AGENT = 1;
 const DROP = 2;
 const TRADE = 3;
 
 export default class FF {
-  constructor(storage) {
-    this.storage = storage;
+  constructor() {
+    this.storage = new FFStorage();
 
     this.espn = new Espn(this);
     this.yahoo = new Yahoo(this);

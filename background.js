@@ -3,6 +3,8 @@ import FF from './src/ff';
 
 let fantasyFind = new FF(new FFStorage());
 let settingsPort; // Port for communicating between settings and background
+window.listOfPlayers = window.listOfPlayers || {};
+window.playerDict = window.playerDict || {};
 
 chrome.runtime.onInstalled.addListener(function(details) {
   // Force install for latest update;
@@ -141,7 +143,7 @@ chrome.alarms.onAlarm.addListener(function(alarm) {
 // when mapping different sites' player IDs
 chrome.runtime.onConnect.addListener(function(port) {
   console.assert(port.name === "settings");
-  window.settingsPort = port;
+  settingsPort = port;
   // port.onMessage.addListener(function(msg) {
   //   if(msg.)
   // })

@@ -1,6 +1,6 @@
 import Vue from 'vue';
-import settings from './settings.vue';
+import Settings from 'Settings';
 
-Vue.component('settings', settings);
+Vue.component('settings', Settings);
 
-new Vue(settings).$mount('#app');
+new Vue(Settings).$mount('#app');

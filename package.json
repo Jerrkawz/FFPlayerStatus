@@ -13,6 +13,7 @@
     "chalk": "^2.4.1",
     "clean-css": "^4.2.1",
     "eslint": "^5.5.0",
+    "eslint-plugin-vue": "^5.0.0-beta.3",
     "execa": "^1.0.0",
     "html-minifier": "^3.5.20",
     "jquery": "^3.3.1",

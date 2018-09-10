@@ -21,7 +21,7 @@
  "content_scripts": [
    {
      "matches": ["<all_urls>"],
-     "css": ["css/main.css", "css/font-awesome.min.css"],
+     "css": ["css/font-awesome.min.css"],
      "js": [
        "parser.js"
      ],

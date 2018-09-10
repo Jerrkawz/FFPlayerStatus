@@ -157,6 +157,7 @@ function initLeague(url) {
 }
     
 export default {
+  name: 'Settings',
   created: function() {
     this.ff = new FF();
     this.leagues = this.ff.getLeaguesFromStorage();

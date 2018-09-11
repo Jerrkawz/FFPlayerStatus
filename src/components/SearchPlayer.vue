@@ -6,7 +6,7 @@
     <div class="player-search-name"><a target="_blank" :href="player.playerProfileUrl">{{player.name}}</a>
       <div class="player-positions">{{player.positions}}</div>
     </div>
-    <InlineAvailability :leagueStatus="player.leagueStatus"></InlineAvailability>
+    <InlineAvailability class="inline-availability" :leagueStatus="player.leagueStatus"></InlineAvailability>
     <div class="player-search-expand"><span class="expand-icon icon-chevron-sign-right"></span></div>
     <!-- <div class="player-details">
       <div class="player-details-header">
@@ -50,10 +50,12 @@ export default {
 .search-player {
   text-align: left;
   font-size: 14px;
+  display: flex;
 }
 
 .search-player .player-img {
-  display: inline-block;
+  display: flex;
+  align-items: center;
 }
 
 .search-player .player-img img {
@@ -97,5 +99,9 @@ export default {
 
 .search-player:nth-child(even).current {
   background: #c6c6c6;
+}
+
+.inline-availability {
+  padding-top: 15px;
 }
 </style>

@@ -1,20 +1,20 @@
 <template>
   <div>
     <div class="player-search-input-wrapper">
-        <input id="search" v-model="searchValue" class="player-search-input" type="search" placeholder="i.e. Matt Ryan" results="10" autosave="player_search" @search="searchInput" incremental="true"/>
+      <input id="search" v-model="searchValue" class="player-search-input" type="search" placeholder="i.e. Matt Ryan" results="10" autosave="player_search" @search="searchInput" incremental="true"/>
     </div>
     <div class="player-results">
       <SearchPlayer v-for="player in players" :key="player.id" :player="player"></SearchPlayer>
     </div>
     <div class="browser-action-footer">
-        <div class="footer-btn">
-            <div @click="goToSettings" id="settings-btn" class="ff-btn grey">
-                <i class="fa fa-gear" aria-hidden="true"></i><span>Settings</span>
-            </div>
-            <div id="refresh-btn" class="ff-btn grey">
-                <i class="fa fa-refresh" aria-hidden="true"></i><span>Refresh</span>
-            </div>
+      <div class="footer-btn">
+        <div @click="goToSettings" id="settings-btn" class="ff-btn grey">
+          <i class="fa fa-gear" aria-hidden="true"></i><span>Settings</span>
         </div>
+        <div id="refresh-btn" class="ff-btn grey">
+          <i class="fa fa-refresh" aria-hidden="true"></i><span>Refresh</span>
+        </div>
+      </div>
     </div> 
   </div>
 </template>

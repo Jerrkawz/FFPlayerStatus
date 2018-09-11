@@ -54,54 +54,44 @@ if (context.NODE_ENV === 'production') {
 }
 
 export default [
-    {
-      input: 'background.js',
-      plugins,
-      output: {
-        name: 'background',
-        file: 'dist/background.js',
-        format: 'iife',
-        sourcemap: process.env.PRODUCTION === 'true' ? false : 'inline',
-      },
+  {
+    input: 'src/background/background.js',
+    plugins,
+    output: {
+      name: 'background',
+      file: 'dist/background.js',
+      format: 'iife',
+      sourcemap: process.env.PRODUCTION === 'true' ? false : 'inline',
     },
-    {
-      input: 'src/settings/settings.js',
-      plugins,
-      output: {
-        name: 'settings',
-        file: 'dist/settings.js',
-        format: 'iife',
-        sourcemap: process.env.PRODUCTION === 'true' ? false : 'inline',
-      },
+  },
+  {
+    input: 'src/settings/settings.js',
+    plugins,
+    output: {
+      name: 'settings',
+      file: 'dist/settings.js',
+      format: 'iife',
+      sourcemap: process.env.PRODUCTION === 'true' ? false : 'inline',
     },
-    {
-        input: 'lib/**/*.js',
-        plugins,
-        output: {
-            name: 'library',
-            file: 'dist/vendor.js',
-            format: 'iife',
-            sourcemap: process.env.PRODUCTION === 'true' ? false : 'inline',
-        },
+  },
+  {
+    input: 'src/browser_action/browser_action.js',
+    plugins,
+    output: {
+      name: 'browser_action',
+      file: 'dist/browser_action.js',
+      format: 'iife',
+      sourcemap: process.env.PRODUCTION === 'true' ? false : 'inline',
     },
-    {
-      input: 'browser_action.js',
-      plugins,
-      output: {
-        name: 'browser_action',
-        file: 'dist/browser_action.js',
-        format: 'iife',
-        sourcemap: process.env.PRODUCTION === 'true' ? false : 'inline',
-      },
+  },
+  {
+    input: 'src/parser.js',
+    plugins,
+    output: {
+      name: 'parser',
+      file: 'dist/parser.js',
+      format: 'iife',
+      sourcemap: process.env.PRODUCTION === 'true' ? false : 'inline',
     },
-    {
-      input: 'parser.js',
-      plugins,
-      output: {
-        name: 'parser',
-        file: 'dist/parser.js',
-        format: 'iife',
-        sourcemap: process.env.PRODUCTION === 'true' ? false : 'inline',
-      },
-    },
-  ];
+  },
+];

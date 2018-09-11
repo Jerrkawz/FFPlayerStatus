@@ -1,5 +1,5 @@
-import FFStorage from './src/storage';
-import FF from './src/ff';
+import FFStorage from '../storage';
+import FF from '../ff';
 
 let fantasyFind = new FF(new FFStorage());
 let settingsPort; // Port for communicating between settings and background

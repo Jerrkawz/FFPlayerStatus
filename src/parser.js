@@ -1,4 +1,9 @@
 import $ from 'jquery';
+import Vue from 'vue';
+import inlineAvailability from 'InlineAvailability';
+
+const InlineAvailability = Vue.extend(inlineAvailability);
+Vue.component('inlineAvailability', InlineAvailability);
 
 const foundLastNames = {};
 let  addInlineAvailability = true;
@@ -108,9 +113,9 @@ function injectMarkup(inNodes) {
   }
 
   function postMarkupAddAvailability() {
-    const playerIds = $(".ff-name[data-playerId]");
-    const playerIdArr = playerIds.filter(function(item, i, ar){
-      return ar.indexOf(item) === i; 
+    const playerIds = Array.from($(".ff-name[data-playerId]"));
+    const playerIdArr = playerIds.filter(function(item, i){
+      return playerIds.indexOf(item) === i; 
     }).map(function (currNode) {
       return $(currNode).data().playerid;
     });
@@ -144,9 +149,14 @@ function injectMarkup(inNodes) {
             }
           }
           $('.ff-name[data-playerid="' + player.id + '"]').each(function() {
-            const found = $(this).find('#inline-availability-marker');
+            const found = $(this).find('.player-search-availability');
             if(found.length === 0) {
-              $(this).append(Handlebars.templates.InlineAvailability(leagueStatusMap));
+              $(this).append('<span id="inline-availability-marker"></span>');
+              new InlineAvailability({
+                propsData: {
+                  leagueStatus: player.leagueStatus,
+                }
+              }).$mount('#inline-availability-marker');
             }
           });
         }
@@ -408,6 +418,10 @@ function evaluateUrl(callback) {
   });
 }
 
+// Inject font awesome
+if (!$('#fontawesome').length) {
+  $('head').appendChild('<link id="fontawesome" rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">');
+}
 // Flush cached responses on page refresh
 if(performance.navigation.type === 1) {
   cachedResponses = {};

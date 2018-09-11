@@ -20,22 +20,15 @@ shell.find('css/*.css').forEach(cssFile => {
   compileCss(cssFile);
 });
 
-// Copy fonts
-console.log(chalk`{green.inverse Copying Fonts}`);
-shell.cp('-R', 'font/', 'dist/fonts');
-
 // Copy images
 console.log(chalk`{green.inverse Copying Images}`);
 shell.cp('-R', 'images/', 'dist/images');
 
 // Minify and copy html
 console.log(chalk`{green.inverse Minifying HTML}`);
-shell.find('*.html').forEach(htmlFile => {
+shell.find('src/**/*.html').forEach(htmlFile => {
   minifyHtml(htmlFile);
 });
-
-// Specifically get the settings page
-minifyHtml(path.resolve('src/settings/settings.html'));
 
 // Run rollup
 console.log(chalk`{green.inverse Rollup}`);
@@ -45,10 +38,10 @@ build();
 shell.cp('manifest.json', 'dist/manifest.json');
 
 function compileCss(fileName) {
-    const newFile = fileName.split('/').slice(-1)[0];
-    const file = fs.readFileSync(fileName, 'utf-8');
-    const output = cssCleaner.minify(file);
-    fs.writeFileSync(`dist/css/${newFile}`, output.styles, 'utf-8');
+  const newFile = fileName.split('/').slice(-1)[0];
+  const file = fs.readFileSync(fileName, 'utf-8');
+  const output = cssCleaner.minify(file);
+  fs.writeFileSync(`dist/css/${newFile}`, output.styles, 'utf-8');
 }
 
 //TODO support non root html files

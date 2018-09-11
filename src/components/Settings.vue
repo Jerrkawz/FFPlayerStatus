@@ -6,10 +6,10 @@
         <h5 class="card-title">Your Leagues</h5>
         <div id="teamlist_ctnr">
           <div class="form-group">
-            <form>
+            <form @submit.prevent="addLeagueUrl">
               <input type="url" id="teamlist_input" class="form-control settings-input" placeholder="Enter URL" v-model="leagueUrl" required>
               <span class="input-group-btn" id="teamlist-btn-span">
-                <button type="submit" @click="addLeagueUrl" class="btn btn-primary settings-button" id="teamlist_add_btn">Add</button>
+                <button type="submit" class="btn btn-primary settings-button" id="teamlist_add_btn">Add</button>
               </span>
               <small class="form-text text-muted">Paste the URL of your ESPN or Yahoo "My Team" page</small>
             </form>
@@ -35,19 +35,19 @@
         </div>
         <h5 class="card-title">Annotations</h5>
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+          <input v-model="rosterAnnotations" @change="saveSettings" class="form-check-input" type="checkbox" value="" id="defaultCheck1">
           <label class="form-check-label" for="defaultCheck1">
             All Websites
           </label>
         </div>
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="defaultCheck2">
+          <input v-model="globalAnnotations" @change="saveSettings" class="form-check-input" type="checkbox" value="" id="defaultCheck2">
           <label class="form-check-label" for="defaultCheck2">
             League and Roster
           </label>
         </div>
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="defaultCheck2">
+          <input v-model="inline" @change="saveSettings" class="form-check-input" type="checkbox" value="" id="defaultCheck2">
           <label class="form-check-label" for="defaultCheck2">
             Inline Availability
           </label>
@@ -167,18 +167,26 @@ export default {
 			if (msg.status === 'addLeagueComplete') {
         this.loadingLeagueId = null;
       }
-		});
+    });
+    
+		chrome.extension.sendMessage({method: "getSettings"}, function (response) {
+      this.inline = response.inline;
+      this.globalAnnotations = response.globalAnnotations;
+      this.rosterAnnotations = response.rosterAnnotations;
+    }.bind(this));
   },
   data: function() {
     return {
       leagueUrl: '',
       leagues: [],
-      loadingLeagueId: null
+      loadingLeagueId: null,
+      inline: true,
+      globalAnnotations: true,
+      rosterAnnotations: true
     }
   },
   methods: {
-    addLeagueUrl(e) {
-      e.preventDefault(); // Keeps the page from reloading
+    addLeagueUrl() {
       const league = initLeague(this.leagueUrl);
       this.leagues.push(league);
       this.loadingLeagueId = league.leagueId;
@@ -190,6 +198,17 @@ export default {
       chrome.runtime.sendMessage({method: 'removeTeam', site: 'espn', leagueId}, function(response){
 				this.leagues = this.ff.getLeaguesFromStorage();
 			}.bind(this));
+    },
+    saveSettings() {
+      debugger;
+      chrome.extension.sendMessage({
+				method: 'changeSetting',
+				query: {
+          inline: this.inline,
+          globalAnnotations: this.globalAnnotations,
+          rosterAnnotations: this.rosterAnnotations
+        }
+			});
     }
   }
 };

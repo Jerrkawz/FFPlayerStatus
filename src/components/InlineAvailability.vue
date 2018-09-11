@@ -32,7 +32,7 @@ export default {
     }
   },
   props: {
-    leagueStatus: []
+    leagueStatus: Array
   }
 }
 </script>
@@ -43,7 +43,6 @@ export default {
   position: relative;
   white-space: normal;
   font-size: 12px;
-  padding: 15px 0px;
   display: inline-block;
   vertical-align: top;
 }

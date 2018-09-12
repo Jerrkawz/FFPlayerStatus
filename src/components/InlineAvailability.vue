@@ -44,7 +44,7 @@ export default {
   white-space: normal;
   font-size: 12px;
   display: inline-block;
-  vertical-align: top;
+  vertical-align: middle;
 }
 
 .availability-type [class*="icon-"] {

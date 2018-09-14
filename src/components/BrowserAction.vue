@@ -9,10 +9,10 @@
     <div class="browser-action-footer">
       <div class="footer-btn">
         <div @click="goToSettings" id="settings-btn" class="ff-btn grey">
-          <i class="fa fa-gear" aria-hidden="true"></i><span>Settings</span>
+          <FontAwesomeIcon icon="cog"></FontAwesomeIcon><span>Settings</span>
         </div>
         <div id="refresh-btn" class="ff-btn grey">
-          <i class="fa fa-refresh" aria-hidden="true"></i><span>Refresh</span>
+          <FontAwesomeIcon icon="sync"></FontAwesomeIcon><span>Refresh</span>
         </div>
       </div>
     </div> 
@@ -20,11 +20,14 @@
 </template>
 <script>
 import SearchPlayer from 'SearchPlayer';
+import  FontAwesomeIconLib from '@fortawesome/vue-fontawesome';
+const { FontAwesomeIcon } = FontAwesomeIconLib;
 
 export default {
     name: 'BrowserAction',
     components: {
-      SearchPlayer
+      SearchPlayer,
+      FontAwesomeIcon
     },
     data: function() {
       return {
@@ -34,7 +37,6 @@ export default {
     },
     methods: {
       searchInput() {
-        debugger;
         chrome.extension.sendMessage({method: 'playerSearch', query: this.searchValue}, response => {
             this.players = response.results.sort((result1, result2) => {
               if (result1.name < result2.name) return -1;
@@ -81,8 +83,8 @@ export default {
   width: 100%;
 }
 
-.fa-gear,
-.fa-refresh {
+.fa-cog,
+.fa-sync {
   margin-right: 5px;
 }
 

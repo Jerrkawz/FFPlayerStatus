@@ -24,10 +24,10 @@
                 </td>
                 <td class="tl-teamname" :id="league.leagueId">
                   {{league.teamName}}
-                  <i v-if="league.leagueId == loadingLeagueId" class="fa fa-spinner fa-spin" style="padding-left: 2px;"></i>
+                  <FontAwesomeIcon v-if="league.leagueId == loadingLeagueId" icon="spinner" spin style="padding-left: 2px;"></FontAwesomeIcon>
                 </td>
                 <td class="teamlist_remove">
-                  <i @click="removeLeague(league.leagueId)" class="fa fa-remove team_remove_btn" aria-hidden="true"></i>
+                  <FontAwesomeIcon icon="times" @click="removeLeague(league.leagueId)" class="team_remove_icon"></FontAwesomeIcon>
                 </td>
               </tr>
             </tbody>
@@ -92,6 +92,8 @@
 
 import FF from '../ff';
 import $ from 'jquery';
+import  FontAwesomeIconLib from '@fortawesome/vue-fontawesome';
+const { FontAwesomeIcon } = FontAwesomeIconLib;
 
 // Fetch and parse all player team names in league
 function getLeagueTeams(response) {
@@ -158,6 +160,9 @@ function initLeague(url) {
     
 export default {
   name: 'Settings',
+  components: {
+    FontAwesomeIcon
+  },
   created: function() {
     this.ff = new FF();
     this.leagues = this.ff.getLeaguesFromStorage();
@@ -200,7 +205,6 @@ export default {
 			}.bind(this));
     },
     saveSettings() {
-      debugger;
       chrome.extension.sendMessage({
 				method: 'changeSetting',
 				query: {
@@ -234,7 +238,7 @@ td.teamlist_remove {
   width: 50px;
 }
 
-.team_remove_btn {
+.team_remove_icon {
   cursor: pointer;
 }
 

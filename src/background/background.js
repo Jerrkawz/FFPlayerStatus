@@ -12,7 +12,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
 
   if (details.reason === 'install') {
     const tempSettings = fantasyFind.getUserSettings();
-    localStorage.clear();
+    //localStorage.clear();
 
     // Re-create FF because the sites loaded their information from disk.
     fantasyFind = new FF(FFStorage);

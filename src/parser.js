@@ -418,10 +418,6 @@ function evaluateUrl(callback) {
   });
 }
 
-// Inject font awesome
-if (!$('#fontawesome').length) {
-  $('head').append('<link id="fontawesome" rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">');
-}
 // Flush cached responses on page refresh
 if(performance.navigation.type === 1) {
   cachedResponses = {};

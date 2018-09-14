@@ -13,7 +13,6 @@
     "@fortawesome/vue-fontawesome": "^0.1.1",
     "babel-eslint": "^9.0.0",
     "chalk": "^2.4.1",
-    "clean-css": "^4.2.1",
     "eslint": "^5.5.0",
     "eslint-plugin-vue": "^5.0.0-beta.3",
     "execa": "^1.0.0",
@@ -28,6 +27,7 @@
     "rollup-plugin-commonjs": "^9.1.6",
     "rollup-plugin-multi-entry": "^2.0.2",
     "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-plugin-postcss": "^1.6.2",
     "rollup-plugin-preprocess": "0.0.4",
     "rollup-plugin-replace": "^2.0.0",
     "rollup-plugin-uglify": "^5.0.2",
@@ -72,5 +72,8 @@
   "bugs": {
     "url": "https://github.com/Jerrkawz/FFPlayerStatus/issues"
   },
-  "homepage": "https://github.com/Jerrkawz/FFPlayerStatus#readme"
+  "homepage": "https://github.com/Jerrkawz/FFPlayerStatus#readme",
+  "dependencies": {
+    "bootstrap-vue": "^2.0.0-rc.11"
+  }
 }

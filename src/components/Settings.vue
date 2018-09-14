@@ -9,6 +9,7 @@
             <form @submit.prevent="addLeagueUrl">
               <input type="url" id="teamlist_input" class="form-control settings-input" placeholder="Enter URL" v-model="leagueUrl" required>
               <span class="input-group-btn" id="teamlist-btn-span">
+                <b-button type="submit" class="settings-button">Add</b-button>
                 <button type="submit" class="btn btn-primary settings-button" id="teamlist_add_btn">Add</button>
               </span>
               <small class="form-text text-muted">Paste the URL of your ESPN or Yahoo "My Team" page</small>
@@ -90,9 +91,11 @@
 
 <script>
 
-import FF from '../ff';
-import $ from 'jquery';
-import  FontAwesomeIconLib from '@fortawesome/vue-fontawesome';
+import FF from '../ff'
+import $ from 'jquery'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+import  FontAwesomeIconLib from '@fortawesome/vue-fontawesome'
 const { FontAwesomeIcon } = FontAwesomeIconLib;
 
 // Fetch and parse all player team names in league

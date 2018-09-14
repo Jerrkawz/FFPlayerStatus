@@ -5,20 +5,11 @@ const shell = require('shelljs');
 const path = require('path');
 const chalk = require('chalk');
 const minify = require('html-minifier').minify;
-const CleanCSS = require('clean-css');
 const fs = require('fs');
-const cssCleaner = new CleanCSS({});
-
 
 // Create directories
 shell.mkdir('-p', 'dist');
 shell.mkdir('-p', 'dist/css');
-
-// Compile and copy css
-console.log(chalk`{green.inverse Compiling CSS}`);
-shell.find('css/*.css').forEach(cssFile => {
-  compileCss(cssFile);
-});
 
 // Copy images
 console.log(chalk`{green.inverse Copying Images}`);
@@ -36,13 +27,6 @@ build();
 
 // Manifest
 shell.cp('manifest.json', 'dist/manifest.json');
-
-function compileCss(fileName) {
-  const newFile = fileName.split('/').slice(-1)[0];
-  const file = fs.readFileSync(fileName, 'utf-8');
-  const output = cssCleaner.minify(file);
-  fs.writeFileSync(`dist/css/${newFile}`, output.styles, 'utf-8');
-}
 
 //TODO support non root html files
 function minifyHtml(fileName) {

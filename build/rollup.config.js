@@ -9,6 +9,8 @@ import preprocess from 'rollup-plugin-preprocess';
 import uglify from 'rollup-plugin-uglify';
 import path from 'path';
 import shell from 'shelljs';
+import postcss from 'rollup-plugin-postcss';
+
 
 //process.chdir(path.resolve(__dirname, '..'));
 const context = {
@@ -16,10 +18,14 @@ const context = {
   FIREFOX: process.env.FIREFOX === 'true',
 };
 
+function isProduction() {
+  return process.env.PRODUCTION === 'true';
+}
+
 function getModuleAliases(basePath) {
   const modules = shell.find(`${basePath}/**/*.@(vue|js)`);
   return modules.reduce((aliases, module) => {
-    let alias = path.basename(module).replace(path.extname(module), '');
+    const alias = path.basename(module).replace(path.extname(module), '');
     aliases[alias] = module;
     return aliases;
   }, {});
@@ -42,11 +48,17 @@ const plugins = [
   replace({
     'process.env.NODE_ENV': JSON.stringify(context.NODE_ENV),
   }),
-  vue({ css: true }),
+  postcss(),
+  vue({
+    template: {
+      isProduction,
+      compilerOptions: { preserveWhitespace: false },
+    },
+    css: true
+  }),
   babel(),
   commonjs(),
   alias(aliases),
-//   builtins(),
 ];
 
 if (context.NODE_ENV === 'production') {

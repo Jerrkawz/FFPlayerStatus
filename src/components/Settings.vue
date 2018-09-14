@@ -1,20 +1,19 @@
 <template>
   <div>
-    <div class="card">
-      <h5 class="card-header">Settings</h5>
-      <div class="card-body">
-        <h5 class="card-title">Your Leagues</h5>
-        <div id="teamlist_ctnr">
-          <div class="form-group">
-            <form @submit.prevent="addLeagueUrl">
-              <input type="url" id="teamlist_input" class="form-control settings-input" placeholder="Enter URL" v-model="leagueUrl" required>
-              <span class="input-group-btn" id="teamlist-btn-span">
-                <b-button type="submit" class="settings-button">Add</b-button>
-                <button type="submit" class="btn btn-primary settings-button" id="teamlist_add_btn">Add</button>
-              </span>
-              <small class="form-text text-muted">Paste the URL of your ESPN or Yahoo "My Team" page</small>
-            </form>
-          </div>
+    <b-card header="Settings"
+      header-tag="header">
+      <h5 class="card-title">Your Leagues</h5>
+        <div>
+          <b-form-group>
+            <b-form inline @submit.prevent="addLeagueUrl">
+              <b-form-input type="url" id="teamlist_input" class="settings-input" placeholder="Enter URL" v-model="leagueUrl" required></b-form-input>
+              <b-input-group>
+                <b-button type="submit" class="settings-button" variant="primary">Add</b-button>
+              </b-input-group>
+            </b-form>
+            <b-form-text text-variant="muted">Paste the URL of your ESPN or Yahoo "My Team" page</b-form-text>
+          </b-form-group>
+          <!-- todo start here -->
           <table class="table table-striped table-bordered teamlist_tbl">
             <tbody>
               <tr v-for="league in leagues" :key="league.leagueId">
@@ -53,8 +52,9 @@
             Inline Availability
           </label>
         </div>
-      </div>
-    </div>
+    </b-card>
+
+
     <div class="card">
       <h5 class="card-header">URL Blacklist</h5>
       <div class="card-body">
@@ -226,6 +226,7 @@ export default {
 .settings-input {
   display: inline-block;
   width: 500px;
+  margin-right: 5px;
 }
 
 .settings-button {

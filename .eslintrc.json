@@ -1,7 +1,6 @@
 {
     "extends": ["eslint:recommended", "plugin:vue/recommended"],
     "plugins": ["vue"],
-    "parser": "babel-eslint",
     "env": {
         "node": true,
         "browser": true,
@@ -11,6 +10,7 @@
         "chrome": true
     },
     "parserOptions": {
+        "parser": "babel-eslint",
         "ecmaVersion": 8,
         "sourceType": "module"
     },

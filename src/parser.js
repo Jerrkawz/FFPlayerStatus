@@ -1,6 +1,10 @@
 import $ from 'jquery';
 import Vue from 'vue';
 import inlineAvailability from 'InlineAvailability';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faPlus, faTimes, faRandom } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faPlus, faTimes, faRandom);
 
 const InlineAvailability = Vue.extend(inlineAvailability);
 Vue.component('inlineAvailability', InlineAvailability);
@@ -179,187 +183,6 @@ function injectMarkup(inNodes) {
   }
 }
 
-
-/**
- * Register hover handlers and position the popup next to the player's name.
- */
-function registerHoverHandlers(popup) {
-  let cancelId;
-
-  const handlerIn = function(event) {
-    const popupWidth = popup.width();
-    clearTimeout(cancelId);
-    popup.toggleClass('active', true);
-    popup.toggleClass('arrow-right', false);
-
-    const element = $(event.currentTarget);
-    const position = element.offset();
-    let popupLeft = position.left + $(element).width() + 20;
-
-    if (popupLeft + popupWidth > $(window).width() - 50) {
-      popupLeft = position.left - 50 - popupWidth;
-      popup.toggleClass('arrow-right', true);
-    }
-
-    popup.css('left', popupLeft);
-    popup.css('top', position.top - 50);
-    fillPopup(element.data().playerid, handlerOut);
-
-    // setTimeout(function () {
-    //   if($("#ff-popup ins.adsbygoogle").html().length === 0) {
-    //     $(".hidden-ad-trigger").click();
-    //   }
-    // }, 500)
-
-  }.bind(window);
-
-  const handlerOut = function() {
-    // TODO: Cancel this timeout if a user makes interaction inside of the popup.
-    cancelId = setTimeout(function() {
-      popup.toggleClass('active', false);
-    }, 500);
-  };
-
-  $('.ff-name').hover(handlerIn, handlerOut);
-}
-
-/**
- * Build popup.
- */
-function buildPopup() {
-  const popupHtml = '<div class="fantasy-finder"><div id="ff-popup"><div class="name"></div></div></div>';
-  $(document.body).append(popupHtml);
-}
-
-/**
- * Render the popup with data, this is asynchronous because of the call to background.js
- */
-function fillPopup(playerId) {
-  getPlayer(playerId, function(player) {
-    if (!player) {
-      return;
-    }
-
-    const tempPlayer = $(Handlebars.templates.PopupTemplate(player));
-
-    const tempPlayerImg = new Image();
-    tempPlayerImg.src =  player.profileImage;
-    tempPlayerImg.onload = function () {
-      $("#ff-popup").find(".temp-default-player").replaceWith("<img src='" + player.profileImage + "'>");
-    };
-
-    $('#ff-popup').html(tempPlayer);
-    $('#ff-popup .close').click(function(){
-      $('#ff-popup').toggleClass('active', false);
-    });
-
-    let leagueId = 0;
-    for (let i = 0; i < player.leagueStatus.length; i++) {
-      const currLeague = player.leagueStatus[i];
-      if(leagueId === undefined && currLeague.site === 'espn') {
-        leagueId = currLeague.leagueId;
-      }
-      const leagueName = currLeague.status !== 1 ? currLeague.leagueName + ' ' + currLeague.ownedByTeamName : currLeague.leagueName;
-      const leagueEntry = $(Handlebars.templates.LeagueAvailabilityRow({
-        league: leagueName,
-        leagueSite: currLeague.site,
-        btnName: getTextForPlayerLeagueStatus(currLeague.status),
-        btnClass: "status" + currLeague.status,
-        btnLink: currLeague.actionUrl,
-        iconClass: getIconClassForPlayerLeagueStatus(currLeague.status),
-        playerId: player.id[currLeague.site],
-        playerName: player.name
-      }));
-      $(leagueEntry).find('.league-name').prop('title', leagueName);
-
-      $("#ff-popup .league-data").append(leagueEntry);
-    }
-    if (player.leagueStatus.length === 0) {
-      $("#ff-popup .league-data").append('<br/><span class="not-available">' + player.name + '\'s position is not allowed in any of your leagues.</span>');
-    }
-
-    $('.ff-btn').click(function(event) {
-      const data = $(event.currentTarget).data();
-      chrome.runtime.sendMessage({method: 'logStuff', data: ['_trackEvent', 'PlayerAction', data.actionType, data.playerName + ':' + data.playerId, 1]});
-      chrome.runtime.sendMessage({method: 'logStuff', data: ['_trackEvent', 'PlayerActionUrl', data.actionType, window.location.href]});
-
-    });
-    $(".player-section-header h2").click(function (event) {
-      $(".player-section-header h2").removeClass("selected");
-      const currHeader = $(event.currentTarget);
-      const sectionTarget = currHeader.data().sectionRef;
-
-      currHeader.addClass("selected");
-
-      $("#ff-popup .player-data-section").removeClass("active");
-      $("#ff-popup " + sectionTarget).addClass("active");
-    });
-    const year = new Date().getFullYear();
-    //Add Stats
-    // if(leagueId===0) {
-    const espnURL = location.protocol + "//games.espn.com/ffl/format/playerpop/overview?leagueId=" + leagueId + "&playerId=" + /*player.otherIds['espn'] ? player.otherIds :*/ player.id + "&playerIdType=playerId&seasonId=" + year + "&xhr=1";
-    $.ajax({
-      url: espnURL,
-
-      type: "GET",
-      success: function (response) {
-        const jqResp = $(response);
-        jqResp.find("#overviewTabs #moreStatsView0 .pc").remove();
-        jqResp.find("#overviewTabs #moreStatsView0 table").removeAttr("style");
-        $("#ff-popup .player-stats").html(jqResp.find("#overviewTabs #moreStatsView0").html());
-        // if ($("#ff-popup .player-profile-img .temp-default-player").length) {
-        //   const img = jqResp.find('.mugshot img').attr('src');
-        //   player.profileImage = img;
-        //   $("#ff-popup").find("temp-default-player").replaceWith("<img src='" + player.profileImage + "'>");
-        // }
-      }
-    });
-    // } else {
-    //   $.ajax({
-    //     url: 
-    //   });   
-    // }
-
-    $('.player-statistics').click(function() {
-      chrome.runtime.sendMessage({method: 'logStuff', data: ['_trackEvent', 'PopUpStats', player.name + ':' + player.id]});
-    });
-
-    chrome.runtime.sendMessage({method: 'logStuff', data: ['_trackEvent', 'PopUp', player.name + ':' + player.id]});
-  });
-}
-
-function getTextForPlayerLeagueStatus(status) {
-  let statusText = "";
-  switch (status) {
-    case 1:
-      statusText = "Add";
-      break;
-    case 2:
-      statusText = "Drop";
-      break;
-    case 3:
-      statusText = "Trade";
-      break;
-  }
-  return statusText;
-}
-
-function getIconClassForPlayerLeagueStatus(status) {
-  let iconClass = "";
-  switch (status) {
-    case 1:
-      iconClass = "fa fa-plus";
-      break;
-    case 2:
-      iconClass = "fa fa-remove";
-      break;
-    case 3:
-      iconClass = "fa fa-random";
-      break;
-  }
-  return iconClass;
-}
-
 /**
  * Ask the background script for a players information.
  */
@@ -428,10 +251,7 @@ evaluateUrl(function() {
     window.playerDict = response;
     chrome.runtime.sendMessage({method: 'getCustomMapping'}, function(response) {
       window.customMappings = response;
-      buildPopup();
-      const popup = $('#ff-popup');
       injectMarkup();
-      registerHoverHandlers(popup);
     });
   });
 });

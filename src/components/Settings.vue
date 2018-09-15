@@ -1,7 +1,6 @@
 <template>
   <div>
-    <b-card header="Settings"
-      header-tag="header">
+    <b-card header="Settings" header-tag="header">
       <h5 class="card-title">Your Leagues</h5>
         <div>
           <b-form-group>
@@ -13,7 +12,6 @@
             </b-form>
             <b-form-text text-variant="muted">Paste the URL of your ESPN or Yahoo "My Team" page</b-form-text>
           </b-form-group>
-          <!-- todo start here -->
           <table class="table table-striped table-bordered teamlist_tbl">
             <tbody>
               <tr v-for="league in leagues" :key="league.leagueId">
@@ -34,58 +32,38 @@
           </table>
         </div>
         <h5 class="card-title">Annotations</h5>
-        <div class="form-check">
-          <input v-model="rosterAnnotations" @change="saveSettings" class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-          <label class="form-check-label" for="defaultCheck1">
-            All Websites
-          </label>
-        </div>
-        <div class="form-check">
-          <input v-model="globalAnnotations" @change="saveSettings" class="form-check-input" type="checkbox" value="" id="defaultCheck2">
-          <label class="form-check-label" for="defaultCheck2">
-            League and Roster
-          </label>
-        </div>
-        <div class="form-check">
-          <input v-model="inline" @change="saveSettings" class="form-check-input" type="checkbox" value="" id="defaultCheck2">
-          <label class="form-check-label" for="defaultCheck2">
-            Inline Availability
-          </label>
-        </div>
+        <b-form-group>
+          <b-checkbox-group stacked v-model="annotations" :options="annotationOptions" @change="saveSettings">
+          </b-checkbox-group>
+        </b-form-group>
     </b-card>
-
-
-    <div class="card">
-      <h5 class="card-header">URL Blacklist</h5>
-      <div class="card-body">
-        <div id="blacklist-input-grp" class="form-group">
-          <input type="text" class="form-control settings-input" placeholder="Enter URL" id="blacklist_input">
-          <span class="input-group-btn" id="blacklist_btn_span">
-            <button type="submit" class="btn btn-primary settings-button" id="blacklist_add_btn">Submit</button>
-          </span>
-          <small class="form-text text-muted">
-            The terms below will prevent the plugin from running on certain pages. If a term is found within the
-            page's URL, the plugin
-            will not work on that page.
-          </small>
-        </div>
-        <table class="table table-striped table-bordered" id="blacklist_tbl">
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-    <div class="card">
-      <h5 class="card-header">Custom Name Mappings</h5>
-      <div class="card-body">
+    <b-card header="URL Blacklist" header-tag="header">
+      <b-form-group>
+        <b-form inline>
+          <b-form-input type="text" class="settings-input" placeholder="Enter URL"></b-form-input>
+          <b-input-group>
+            <b-button type="submit" class="settings-button" variant="primary">Submit</b-button>
+          </b-input-group>
+        </b-form>
+        <b-form-text text-variant="muted">
+          The terms below will prevent the plugin from running on certain pages. If a term is found within the
+          page's URL, the plugin
+          will not work on that page.
+        </b-form-text>
+      </b-form-group>
+      <table class="table table-striped table-bordered">
+        <tbody></tbody>
+      </table>
+    </b-card>
+    <b-card header="Custom Name Mappings" header-tag="header">
         'Cuz we all love nicknames
         <div id="custom-mapping-body">
-          <button type="submit" class="btn btn-primary" id="cm_add_btn">Add+</button>
+          <b-button type="submit" variant="primary">Add+</b-button>
           <table class="table table-striped table-bordered" id="custom-mapping-table">
             <tbody></tbody>
           </table>
         </div>
-      </div>
-    </div>
+    </b-card>
   </div>
 </template>
 
@@ -154,9 +132,9 @@ function initLeague(url) {
       league.teamName = teams[league.teamId];
       league.shortNames = getLeagueTeamsShortNames(teams);
       league.site = 'espn';
-        league.sport = 'football';
+      league.sport = 'football';
       league.playerIdToTeamIndex = {};
-      }.bind(this)
+    }.bind(this)
   });
   return league;
 }
@@ -178,9 +156,12 @@ export default {
     });
     
 		chrome.extension.sendMessage({method: "getSettings"}, function (response) {
-      this.inline = response.inline;
-      this.globalAnnotations = response.globalAnnotations;
-      this.rosterAnnotations = response.rosterAnnotations;
+      // Filter out only true properties then return those names
+      Object.keys(response).forEach(key => {
+        if (response[key]) {
+          this.annotations.push(key);
+        }
+      });
     }.bind(this));
   },
   data: function() {
@@ -188,9 +169,12 @@ export default {
       leagueUrl: '',
       leagues: [],
       loadingLeagueId: null,
-      inline: true,
-      globalAnnotations: true,
-      rosterAnnotations: true
+      annotations: [],
+      annotationOptions: [
+        {text: 'All Websites', value:'globalAnnotations'},
+        {text: 'League and Roster', value:'rosterAnnotations'},
+        {text: 'Inline Availability', value:'inline'},
+      ]
     }
   },
   methods: {
@@ -207,13 +191,13 @@ export default {
 				this.leagues = this.ff.getLeaguesFromStorage();
 			}.bind(this));
     },
-    saveSettings() {
+    saveSettings(selected) {
       chrome.extension.sendMessage({
 				method: 'changeSetting',
 				query: {
-          inline: this.inline,
-          globalAnnotations: this.globalAnnotations,
-          rosterAnnotations: this.rosterAnnotations
+          inline: selected.includes('inline'),
+          globalAnnotations: selected.includes('globalAnnotations'),
+          rosterAnnotations: selected.includes('rosterAnnotations')
         }
 			});
     }

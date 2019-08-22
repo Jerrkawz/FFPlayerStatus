@@ -1,45 +1,42 @@
 <template>
-  <div class="search-player">
+<span>
+<span v-if="!showStats">
+  <div class="search-player" @click="showStats = !showStats">
     <div class="player-img">
       <img :src="player.profileImage">
     </div>
     <div class="player-search-name"><a target="_blank" :href="player.playerProfileUrl">{{player.name}}</a>
       <div class="player-positions">{{player.positions}}</div>
     </div>
-    <InlineAvailability class="inline-availability" :leagueStatus="player.leagueStatus"></InlineAvailability>
-    <div class="player-search-expand"><span class="expand-icon icon-chevron-sign-right"></span></div>
-    <!-- <div class="player-details">
-      <div class="player-details-header">
-        <h2 class="selected" data-section-ref=".player-details-availability" data-player-id="16763">Availability</h2>
-        <h2 data-section-ref=".player-details-stats" data-player-id="16763">Stats</h2>
-      </div>
-      <div class="player-details-availability active player-details-section">
-        <div class="league-row">
-          <div class="league-row-padder">
-            <div class="site-icon espn"></div>
-            <div class="league-name">Taco's truck</div>
-            <a class="ff-btn-link" href="http://games.espn.go.com/ffl/freeagency?incoming=1&amp;leagueId=703055&amp;trans=2_16763_-1_1001_1_20"
-              target="_blank">
-              <div class="ff-btn status1" data-player-id="16763" data-player-name="Jordan Matthews" data-action-type="Add">
-                <span class="ff-btn-icon fa fa-plus"></span>
-                <div class="ff-btn-text">Add</div>
-              </div>
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="player-details-stats player-details-section">
-        <div class="loading-spinner icon-refresh icon-spin icon-large"></div>
-      </div>
-    </div> -->
-  </div>
+    <InlineAvailability class="inline-availability" :player="player"></InlineAvailability>
+    <div class="player-search-expand">
+      <span class="expand-icon">
+        <FontAwesomeIcon icon='chevron-right'></FontAwesomeIcon>
+      </span>
+    </div>
+    </span>
+    <div v-if="showStats" class="player-card-wrapper">
+      <StatsCard :player="player" @click.native="showStats = !showStats" class="player-card"></StatsCard>
+    </div>
+  </span>
 </template>
 <script>
+import StatsCard from 'StatsCard';
 import InlineAvailability from 'InlineAvailability';
+import  FontAwesomeIconLib from '@fortawesome/vue-fontawesome'
+const { FontAwesomeIcon } = FontAwesomeIconLib;
+
 export default {
   name: 'SearchPlayer',
   components: {
-    InlineAvailability
+    InlineAvailability,
+    FontAwesomeIcon,
+    StatsCard
+  },
+  data() {
+    return {
+      showStats: false
+    }
   },
   props: {
     player: {}
@@ -49,8 +46,8 @@ export default {
 <style scoped>
 .search-player {
   text-align: left;
-  font-size: 14px;
   display: flex;
+  font-size: 14px;
 }
 
 .search-player .player-img {
@@ -103,5 +100,27 @@ export default {
 
 .inline-availability {
   padding-top: 15px;
+  flex-grow: 1;
+}
+
+.player-search-expand {
+  display: flex;
+  align-items: center;
+}
+
+.expand-icon {
+  margin-right: 5px;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 18px;
+}
+
+.player-card-wrapper {
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 0.25rem;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3);
+    margin: 10px 5px;
+    padding: 0px 5px 5px 5px;
+    font-size: 14px;
 }
 </style>

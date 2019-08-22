@@ -1,6 +1,6 @@
 <template>
   <span class="player-search-availability">
-    <span class="inline-availability-marker">
+    <span :id="'marker-'+player.id" class="inline-availability-marker" @mouseover="hoverIn" @mouseout="hoverOut">
       <span v-if="availableCount" class="availability-type add-leagues">
         <FontAwesomeIcon icon="plus"></FontAwesomeIcon>
         <span class="inline-availability-txt">{{availableCount}}</span>
@@ -14,31 +14,67 @@
         <span class="inline-availability-txt">{{takenCount}}</span>
       </span>
     </span>
+    <span :id="'container-'+player.id" @mouseover="hoverIn" @mouseout="hoverOut">
+      <b-popover :target="'marker-'+player.id"
+        class="id-hover-card"
+        placement="right"
+        :show="showPopover"
+        :container="'container-'+player.id">
+        <StatsCard :player="player"></StatsCard>
+      </b-popover>
+    </span>
   </span>
 </template>
 
 <script>
-import  FontAwesomeIconLib from '@fortawesome/vue-fontawesome';
+import StatsCard from 'StatsCard'
+import  FontAwesomeIconLib from '@fortawesome/vue-fontawesome'
 const { FontAwesomeIcon } = FontAwesomeIconLib;
+
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 export default {
   name: 'InlineAvailability',
   components: {
-    FontAwesomeIcon
+    FontAwesomeIcon,
+    StatsCard
+  },
+  props: {
+    player: {},
+    hoverEnabled: false
   },
   computed: {
     availableCount () {
-      return this.leagueStatus.filter(status => status.status === 1).length;
+      return this.player.leagueStatus.filter(status => status.status === 1).length;
     },
     ownedCount () {
-      return this.leagueStatus.filter(status => status.status === 2).length;
+      return this.player.leagueStatus.filter(status => status.status === 2).length;
     },
     takenCount () {
-      return this.leagueStatus.filter(status => status.status === 3).length;
+      return this.player.leagueStatus.filter(status => status.status === 3).length;
     }
   },
-  props: {
-    leagueStatus: Array
+  methods: {
+    hoverIn() {
+      if (this.hoverEnabled) {
+        window.clearInterval(this.hoverTimer);
+        this.showPopover = true;
+      }
+    },
+    hoverOut(e) {
+      if (this.hoverEnabled) {
+        this.hoverTimer = setInterval(() => {
+          this.showPopover = false;
+        }, 500);
+      }
+    }
+  },
+  data() {
+    return {
+      showPopover: false,
+      hoverTimer: 0
+    }
   }
 }
 </script>
@@ -48,7 +84,6 @@ export default {
   color: white;
   position: relative;
   white-space: normal;
-  font-size: 12px;
   display: inline-block;
   vertical-align: middle;
 }

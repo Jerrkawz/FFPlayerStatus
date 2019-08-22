@@ -1,26 +1,28 @@
 <template>
   <div>
     <div class="player-search-input-wrapper">
-      <input id="search" v-model="searchValue" class="player-search-input" type="search" placeholder="i.e. Matt Ryan" results="10" autosave="player_search" @search="searchInput" incremental="true"/>
+      <input id="search" v-model="searchValue" class="form-control player-search-input" type="search" placeholder="i.e. Matt Ryan" results="10" autosave="player_search" @search="searchInput" incremental="true"/>
     </div>
     <div class="player-results">
-      <SearchPlayer v-for="player in players" :key="player.id" :player="player"></SearchPlayer>
+      <SearchPlayer class="search-result" v-for="player in players" :key="player.id" :player="player"></SearchPlayer>
     </div>
     <div class="browser-action-footer">
       <div class="footer-btn">
-        <div @click="goToSettings" id="settings-btn" class="ff-btn grey">
-          <FontAwesomeIcon icon="cog"></FontAwesomeIcon><span>Settings</span>
-        </div>
-        <div id="refresh-btn" class="ff-btn grey">
-          <FontAwesomeIcon icon="sync"></FontAwesomeIcon><span>Refresh</span>
-        </div>
+        <b-button class="ff-btn" @click="goToSettings" size="sm">
+          <FontAwesomeIcon icon="cog"></FontAwesomeIcon> Settings
+        </b-button>
+        <b-button class="ff-btn" size="sm">
+          <FontAwesomeIcon icon="sync"></FontAwesomeIcon> Refresh
+        </b-button>
       </div>
     </div> 
   </div>
 </template>
 <script>
-import SearchPlayer from 'SearchPlayer';
-import  FontAwesomeIconLib from '@fortawesome/vue-fontawesome';
+import SearchPlayer from 'SearchPlayer'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+import  FontAwesomeIconLib from '@fortawesome/vue-fontawesome'
 const { FontAwesomeIcon } = FontAwesomeIconLib;
 
 export default {
@@ -37,6 +39,11 @@ export default {
     },
     methods: {
       searchInput() {
+        if (!this.searchValue) {
+          this.players = [];
+          return;
+        }
+
         chrome.extension.sendMessage({method: 'playerSearch', query: this.searchValue}, response => {
             this.players = response.results.sort((result1, result2) => {
               if (result1.name < result2.name) return -1;
@@ -80,6 +87,8 @@ export default {
 }
 
 .player-search-input-wrapper .player-search-input {
+  font-size: 10px;
+  height: 1.5rem;
   width: 100%;
 }
 
@@ -87,53 +96,17 @@ export default {
 .fa-sync {
   margin-right: 5px;
 }
-
 .ff-btn {
-  display: inline-block;
-  padding: 5px 10px;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
-  text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.4);
-  -webkit-box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.5);
-  -moz-box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.5);
-  box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.5);
-  font-size: 12px;
-  font-weight: bold;
-  line-height: 14px;
-  text-align: center;
-  cursor: pointer;
-  margin: 2px;
+    font-size: 12px;
+    padding: .1rem .25rem;
 }
 
-.ff-btn.grey {
-  background: #6b717c;
-  background: -ms-linear-gradient(top, #898c91, #4e5766);
-  background: -webkit-gradient(linear, left top, left bottom, from(#898c91), to(#4e5766));
-  background: -moz-linear-gradient(center top, #898c91 0%, #4e5766 100%);
-  background: -moz-gradient(center top, #898c91 0%, #4e5766 100%);
-  color: #ffffff;
+.search-result:nth-child(odd) {
+    background: #f9f9f9;
 }
 
-.ff-btn.grey:hover {
-  background: #757b87;
-  background: -ms-linear-gradient(top, #919498, #596375);
-  background: -webkit-gradient(linear, left top, left bottom, from(#919498), to(#596375));
-  background: -moz-linear-gradient(center top, #919498 0%, #596375 100%);
-  background: -moz-gradient(center top, #919498 0%, #596375 100%);
+.search-result:nth-child(even) {
+    background: rgba(15, 91, 26, 0.1);
 }
 
-.ff-btn.grey:active {
-  background: #757b87;
-  background: -ms-linear-gradient(top, #919498, #596375);
-  background: -webkit-gradient(linear, left top, left bottom, from(#919498), to(#596375));
-  background: -moz-linear-gradient(center top, #919498 0%, #596375 100%);
-  background: -moz-gradient(center top, #919498 0%, #596375 100%);
-  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
-  -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
-  -moz-box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
-  -webkit-box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
-  box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
-}
 </style>

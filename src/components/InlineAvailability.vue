@@ -15,13 +15,13 @@
       </span>
     </span>
     <span :id="'container-'+player.id" @mouseover="hoverIn" @mouseout="hoverOut">
-      <b-popover :target="'marker-'+player.id"
+      <span :target="'marker-'+player.id"
         class="id-hover-card"
         placement="right"
         :show="showPopover"
         :container="'container-'+player.id">
         <StatsCard :player="player"></StatsCard>
-      </b-popover>
+      </span>
     </span>
   </span>
 </template>
@@ -31,8 +31,6 @@ import StatsCard from 'StatsCard'
 import  FontAwesomeIconLib from '@fortawesome/vue-fontawesome'
 const { FontAwesomeIcon } = FontAwesomeIconLib;
 
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 export default {
   name: 'InlineAvailability',

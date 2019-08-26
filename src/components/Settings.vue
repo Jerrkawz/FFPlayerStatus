@@ -1,7 +1,11 @@
 <template>
   <div>
-    <b-card header="Settings" header-tag="header">
-      <h5 class="card-title">Your Leagues</h5>
+    <b-card-header header-tag="header" class="card-header" role="tab">
+      <a v-b-toggle="'collapse-settings'" href="javascript: void();" @click.prevent>Settings</a>
+    </b-card-header>
+    <b-collapse visible id="collapse-settings">
+      <b-card-body>
+        <h5 class="card-title">Your Leagues</h5>
         <div>
           <b-form-group>
             <b-form inline @submit.prevent="addLeagueUrl">
@@ -36,34 +40,50 @@
           <b-checkbox-group stacked v-model="annotations" :options="annotationOptions" @change="saveSettings">
           </b-checkbox-group>
         </b-form-group>
-    </b-card>
-    <b-card header="URL Blacklist" header-tag="header">
-      <b-form-group>
-        <b-form inline>
-          <b-form-input type="text" class="settings-input" placeholder="Enter URL"></b-form-input>
-          <b-input-group>
-            <b-button type="submit" class="settings-button" variant="primary">Submit</b-button>
-          </b-input-group>
-        </b-form>
-        <b-form-text text-variant="muted">
-          The terms below will prevent the plugin from running on certain pages. If a term is found within the
-          page's URL, the plugin
-          will not work on that page.
-        </b-form-text>
-      </b-form-group>
-      <table class="table table-striped table-bordered">
-        <tbody></tbody>
-      </table>
-    </b-card>
-    <b-card header="Custom Name Mappings" header-tag="header">
+      </b-card-body>
+    </b-collapse>
+    <b-card-header header-tag="header" class="card-header" role="tab">
+      <a v-b-toggle="'collapse-blacklist'" href="javascript: void();" @click.prevent>URL Blacklist</a>
+    </b-card-header>
+    <b-collapse visible id="collapse-blacklist">
+      <b-card-body>
+        <b-form-group>
+          <b-form inline>
+            <b-form-input type="text" class="settings-input" placeholder="Enter URL"></b-form-input>
+            <b-input-group>
+              <b-button type="submit" class="settings-button" variant="primary">Submit</b-button>
+            </b-input-group>
+          </b-form>
+          <b-form-text text-variant="muted">
+            The terms below will prevent the plugin from running on certain pages. If a term is found within the
+            page's URL, the plugin
+            will not work on that page.
+          </b-form-text>
+        </b-form-group>
+        <table class="table table-striped table-bordered">
+          <tbody></tbody>
+        </table>
+      </b-card-body>
+    </b-collapse>
+    <b-card-header header-tag="header" class="card-header" role="tab">
+      <a href="javascript: void();" v-b-toggle="'collapse-custom-mappings'" @click.prevent>
+          Custom Name Mappings
+      </a>
+      <FontAwesomeIcon id="name-tooltip" icon="info-circle"></FontAwesomeIcon>
+      <b-tooltip target="name-tooltip" placement="top">
         'Cuz we all love nicknames
+      </b-tooltip>
+    </b-card-header>
+    <b-collapse visible id="collapse-custom-mappings">
+      <b-card-body>
         <div id="custom-mapping-body">
           <b-button type="submit" variant="primary">Add+</b-button>
           <table class="table table-striped table-bordered" id="custom-mapping-table">
             <tbody></tbody>
           </table>
         </div>
-    </b-card>
+      </b-card-body>
+    </b-collapse>
   </div>
 </template>
 
@@ -207,6 +227,11 @@ export default {
 
 
 <style scoped>
+
+.card-header {
+  font-size: 20px;
+}
+
 .settings-input {
   display: inline-block;
   width: 500px;

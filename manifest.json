@@ -28,15 +28,7 @@
    }
  ],
  "web_accessible_resources": [
-  "fonts/FontAwesome.otf",
-  "fonts/fontawesome-webfont.svg",
-  "fonts/fontawesome-webfont.woff",
-  "fonts/fontawesome-webfont.woff2",
-  "fonts/fontawesome-webfont.eot",
-  "fonts/fontawesome-webfont.ttf",
-  "images/default_profile.png",
-  "images/espn.png",
-  "images/yahoo.png"
+  "images/*"
  ],
  "browser_action": {
      "default_name": "FF Player Status",

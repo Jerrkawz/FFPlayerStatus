@@ -8,9 +8,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
-    "@fortawesome/fontawesome-svg-core": "^1.2.4",
-    "@fortawesome/free-solid-svg-icons": "^5.3.1",
-    "@fortawesome/vue-fontawesome": "^0.1.1",
     "babel-eslint": "^9.0.0",
     "chalk": "^2.4.1",
     "eslint": "^5.5.0",
@@ -74,6 +71,6 @@
   },
   "homepage": "https://github.com/Jerrkawz/FFPlayerStatus#readme",
   "dependencies": {
-    "bootstrap-vue": "^2.0.0-rc.11"
+    "bootstrap-vue": "^2.0.0-rc.28"
   }
 }

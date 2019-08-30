@@ -9,10 +9,10 @@
     <div class="browser-action-footer">
       <div class="footer-btn">
         <b-button class="ff-btn" @click="goToSettings" size="sm">
-          <FontAwesomeIcon icon="cog"></FontAwesomeIcon> Settings
+          <!--<FontAwesomeIcon icon="cog"></FontAwesomeIcon> --> Settings
         </b-button>
         <b-button class="ff-btn" size="sm">
-          <FontAwesomeIcon icon="sync"></FontAwesomeIcon> Refresh
+          <!-- <FontAwesomeIcon icon="sync"></FontAwesomeIcon>  --> Refresh
         </b-button>
       </div>
     </div> 
@@ -22,14 +22,11 @@
 import SearchPlayer from 'SearchPlayer'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-import  FontAwesomeIconLib from '@fortawesome/vue-fontawesome'
-const { FontAwesomeIcon } = FontAwesomeIconLib;
 
 export default {
     name: 'BrowserAction',
     components: {
       SearchPlayer,
-      FontAwesomeIcon
     },
     data: function() {
       return {

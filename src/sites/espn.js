@@ -1,11 +1,44 @@
 import Site from './site';
 import Player from '../player';
 import $ from 'jquery';
+import FantasyFilter from './utils/FantasyFilter';
+
+const BASE_URL = 'https://fantasy.espn.com/apis/v3/games/ffl/seasons/{0}/segments/0/leagues/{1}';
+const PLAYER_URL = `${BASE_URL}?view=kona_player_info`;
+const SEASON_ID = 2019; // TODO fix
 
 export default class Espn  extends Site {
   constructor(ff) {
     super(ff, 'espn');
-    this.baseUrl = 'http://games.espn.go.com/';
+  }
+
+  initLeague(leagueId, callback) {
+    const urlString = BASE_URL.replace('{0}', SEASON_ID).replace('{1}', leagueId);
+    $.ajax({
+      url: urlString,
+      data: 'text',
+      headers: {
+        'User-Agent': 'FF_Finder/2.0.0',
+        'Accept': '*/*',
+        'Host': 'fantasy.espn.com',
+        'Accept-Encoding': 'gzip, deflate',
+      },
+      success: function(data) {
+        debugger;
+        const league = {};
+        league.leagueId = leagueId;
+        league.teamName = data.settings.name;
+        league.shortNames = [];
+        league.site = 'espn';
+        league.sport = 'football';
+        league.playerIdToTeamIndex = {};
+
+        data.teams.forEach(team => {
+          league.shortNames.push(team.abbrev)
+        });
+        callback(league);
+      }.bind(this)
+    });
   }
 
   getLocalLeague(league) {
@@ -25,89 +58,84 @@ export default class Espn  extends Site {
     this._fetchTakenPlayersForLeague(league);
   }
 
-  _fetchTakenPlayersForLeague(league, opt_offset, opt_slotCategoryGroup) {
-    let urlString = `http://games.espn.go.com/ffl/freeagency?leagueId=${league.leagueId}&seasonId=${league.seasonId}&avail=4`;
-    if (opt_offset) {
-      urlString += `&startIndex=${opt_offset}`;
-    }
-    if (opt_slotCategoryGroup) {
-      urlString += `&slotCategoryGroup=${opt_slotCategoryGroup}`;
-    }
+  _fetchTakenPlayersForLeague(league, opt_offset) {
+    const urlString = PLAYER_URL.replace('{0}', SEASON_ID).replace('{1}', league.leagueId);
+    const builder = new FantasyFilter.Builder();
+    const fantasyFilter = builder
+      .withPlayerStatus('ONTEAM')
+      .withSortPercOwned(2, false)
+      .withOffset(opt_offset || 0)
+      .build();
 
     $.ajax({
       url: urlString,
       data: 'text',
+      headers: {
+        'User-Agent': 'FF_Finder/2.0.0',
+        'Accept': '*/*',
+        'Host': 'fantasy.espn.com',
+        'Accept-Encoding': 'gzip, deflate',
+        'x-fantasy-filter': JSON.stringify(fantasyFilter)
+      },
       success: function(data) {
-        const elements = $($('<div>').html(data)[0]).find('table.playerTableTable tr.pncPlayerRow');
-        //Should be each player row
-        for(let i = 0; i < elements.length; i++) {
-          const currPlayerRow = $(elements[i]);
-          const currPlayerId =  $(currPlayerRow).attr('id').substring(4);
-          const owningTeamEl = $(currPlayerRow).find('td:nth-child(3) a');
+        data.players.forEach(playerData => {
+          const currPlayerId = playerData.player.id;
+          const owningTeamId = playerData.player.proTeamId;
+          this.addPlayerMapping(league, currPlayerId, owningTeamId);
 
-          if ($(owningTeamEl).length > 0) {
-            const owningTeamUrllets = this.ff.getUrlVars($(owningTeamEl).attr('href'));
-            const owningTeamId = owningTeamUrllets.teamId;
-            this.addPlayerMapping(league, currPlayerId, owningTeamId);
+          if (data.players.length === 50) {
+            opt_offset = (opt_offset || 0) + 50;
+            this._fetchTakenPlayersForLeague(league, opt_offset);
+          } else {
+            this.updateLocalLeague(league);
+            this.save();
           }
-        }
-        if (elements.length === 50) {
-          if (opt_offset === undefined) {
-            opt_offset = 0;
-          }
-          opt_offset += 50;
-          this._fetchTakenPlayersForLeague(league, opt_offset, opt_slotCategoryGroup);
-        } else {
-          this.updateLocalLeague(league);
-          this.save();
-        }
+
+        });
       }.bind(this)
     });
 
   }
 
   fetchAllPlayersForLeague(league, listOfPlayers, port, opt_offset) {
-    let urlString = `http://games.espn.go.com/ffl/freeagency?leagueId=${league.leagueId}&seasonId=${league.seasonId}&avail=-1`;
-    if (opt_offset) {
-      urlString += `&startIndex=${opt_offset}`;
-    }
+    const urlString = PLAYER_URL.replace('{0}', SEASON_ID).replace('{1}', league.leagueId);
+    const builder = new FantasyFilter.Builder();
+    const fantasyFilter = builder
+      .withSortPercOwned(2, false)
+      .withOffset(opt_offset || 0)
+      .build();
+    
     $.ajax({
       url: urlString,
       data: 'text',
+      headers: {
+        'User-Agent': 'FF_Finder/2.0.0',
+        'Accept': '*/*',
+        'Host': 'fantasy.espn.com',
+        'Accept-Encoding': 'gzip, deflate',
+        'x-fantasy-filter': JSON.stringify(fantasyFilter)
+      },
       success: function(data) {
-        const elements = $($('<div>').html(data)[0]).find('table.playerTableTable tr.pncPlayerRow');
-        //Should be each player row
-        for(let i = 0; i < elements.length; i++) {
-          const currPlayerRow = $(elements[i]);
-          const currPlayerId =  $(currPlayerRow).attr('id').substring(4);
-          const nameDiv = $(currPlayerRow).find('td.playertablePlayerName');
-          const parts = nameDiv[0].innerText.split(",");
-          let name = parts[0];
-          if(name.includes("D/ST")) {
-            const nametoks = name.split(/\s+/);
-            name = nametoks[0] + " " + nametoks[1];
+        debugger;
+        data.players.forEach(playerData => {
+          const currPlayerId = playerData.id;
+          const name = playerData.player.fullName;
+          if (name.includes("D/ST")) {
             const player = new Player(currPlayerId, name, null, "D/ST", league.leagueId, 'espn');
             listOfPlayers[currPlayerId] = player;
             this.addPlayerToDict(player);
-            continue;
+          } else {
+            const team = playerData.player.proTeamId; // TODO map from pro team id to team name (either statically or dynamically)
+            const pos = playerData.player.defaultPositionId; // TODO map from id to position name (either statically or dynamically)
+            const player = new Player(currPlayerId, name, team, pos, league.leagueId, 'espn');
+            listOfPlayers[currPlayerId] = player;
+            this.addPlayerToDict(player);
           }
-          let team;
-          let pos;
-          if(parts[1] !== undefined) {
-            team = parts[1].split(/\s+/)[1];
-            pos = parts[1].split(/\s+/)[2];
-          }
-
-          const player = new Player(currPlayerId, name, team, pos, league.leagueId, 'espn');
-          listOfPlayers[currPlayerId] = player;
-          this.addPlayerToDict(player);
-        }
-        if (elements.length === 50) {
-          if (opt_offset === undefined) {
-            opt_offset = 0;
-          }
-          opt_offset += 50;
-          this.fetchAllPlayersForLeague(league, listOfPlayers, port, opt_offset);
+        });
+        if (data.players.length === 50) {
+          opt_offset = (opt_offset || 0) + 50;
+          // TODO re-enable after it works for page one
+          // this.fetchAllPlayersForLeague(league, listOfPlayers, port, opt_offset);
         } else {
           console.log("done");
           if(port !== undefined) {
@@ -118,6 +146,7 @@ export default class Espn  extends Site {
     });
   }
 
+  // TODO Fix this method
   addPlayerIdsForSite(league, port, opt_offset) {
     let urlString = 'http://games.espn.go.com/ffl/freeagency?leagueId=' + league.leagueId + '&seasonId=' + league.seasonId + '&avail=-1';
     if (opt_offset) {

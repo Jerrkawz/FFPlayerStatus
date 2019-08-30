@@ -2,15 +2,15 @@
   <span class="player-search-availability">
     <span :id="'marker-'+player.id" class="inline-availability-marker" @mouseover="hoverIn" @mouseout="hoverOut">
       <span v-if="availableCount" class="availability-type add-leagues">
-        <FontAwesomeIcon icon="plus"></FontAwesomeIcon>
+        <!-- <FontAwesomeIcon icon="plus"></FontAwesomeIcon> -->
         <span class="inline-availability-txt">{{availableCount}}</span>
       </span>
       <span v-if="ownedCount" class="availability-type drop-leagues ">
-        <FontAwesomeIcon icon="times"></FontAwesomeIcon>
+        <!-- <FontAwesomeIcon icon="times"></FontAwesomeIcon> -->
         <span class="inline-availability-txt">{{ownedCount}}</span>
       </span>
       <span v-if="takenCount" class="availability-type trade-leagues ">
-        <FontAwesomeIcon icon="random"></FontAwesomeIcon>
+        <!-- <FontAwesomeIcon icon="random"></FontAwesomeIcon> -->
         <span class="inline-availability-txt">{{takenCount}}</span>
       </span>
     </span>
@@ -28,14 +28,10 @@
 
 <script>
 import StatsCard from 'StatsCard'
-import  FontAwesomeIconLib from '@fortawesome/vue-fontawesome'
-const { FontAwesomeIcon } = FontAwesomeIconLib;
-
 
 export default {
   name: 'InlineAvailability',
   components: {
-    FontAwesomeIcon,
     StatsCard
   },
   props: {

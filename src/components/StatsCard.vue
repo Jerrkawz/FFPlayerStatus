@@ -18,9 +18,9 @@
           <div :class="league.site + ' site-icon'"></div>
           <div class="league-name">{{league.leagueName}}</div>
           <a class="ff-btn-link" :href="league.actionUrl" target="_blank">
-            <b-button v-if="league.status === 1" variant="success" size="sm" class="ff-btn"><FontAwesomeIcon icon="plus"></FontAwesomeIcon> Add</b-button>
-            <b-button v-if="league.status === 2" variant="warning" size="sm" class="ff-btn"><FontAwesomeIcon icon="random"></FontAwesomeIcon> Trade</b-button>
-            <b-button v-if="league.status === 3" variant="error" size="sm" class="ff-btn"><FontAwesomeIcon icon="times"></FontAwesomeIcon> Drop</b-button>
+            <b-button v-if="league.status === 1" variant="success" size="sm" class="ff-btn"> <!-- <FontAwesomeIcon icon="plus"></FontAwesomeIcon> --> Add</b-button>
+            <b-button v-if="league.status === 2" variant="warning" size="sm" class="ff-btn"> <!-- <FontAwesomeIcon icon="random"></FontAwesomeIcon> --> Trade</b-button>
+            <b-button v-if="league.status === 3" variant="error" size="sm" class="ff-btn"> <!-- <FontAwesomeIcon icon="times"></FontAwesomeIcon> --> Drop</b-button>
           </a>
         </div>
       </div>
@@ -34,13 +34,8 @@
 </template>
 
 <script>
-import  FontAwesomeIconLib from '@fortawesome/vue-fontawesome'
-const { FontAwesomeIcon } = FontAwesomeIconLib;
 
 export default {
-  components: {
-    FontAwesomeIcon
-  },
   props: {
       player: {}
   }

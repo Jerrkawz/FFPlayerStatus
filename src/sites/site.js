@@ -56,13 +56,16 @@ export default class Site {
     return false;
   }
 
-  addUserTeam(leagueVars) {
-    this.fetchTakenPlayers(leagueVars);
-    let tempLeaguesObject = this.ff.storage.get(this.getSiteUserKey(), 'leagues');
-    tempLeaguesObject = tempLeaguesObject || [];
-    tempLeaguesObject.push(leagueVars);
-    this.ff.storage.set(this.getSiteUserKey(), 'leagues', tempLeaguesObject);
-    this.leagues.push(leagueVars);
+  addUserTeam(leagueId, callback) {
+    this.initLeague(leagueId, (league) => {
+      this.fetchTakenPlayers(league);
+      let leaguesObject = this.ff.storage.get(this.getSiteUserKey(), 'leagues');
+      leaguesObject = leaguesObject || [];
+      leaguesObject.push(league);
+      this.ff.storage.set(this.getSiteUserKey(), 'leagues', leaguesObject);
+      this.leagues.push(league);
+      callback();
+    });
   }
 
   removeUserTeam(leagueId) {

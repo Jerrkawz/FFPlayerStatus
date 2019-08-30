@@ -11,7 +11,7 @@
     <InlineAvailability class="inline-availability" :player="player"></InlineAvailability>
     <div class="player-search-expand">
       <span class="expand-icon">
-        <FontAwesomeIcon icon='chevron-right'></FontAwesomeIcon>
+        <!-- <FontAwesomeIcon icon='chevron-right'></FontAwesomeIcon> -->
       </span>
     </div>
     </span>
@@ -23,14 +23,11 @@
 <script>
 import StatsCard from 'StatsCard';
 import InlineAvailability from 'InlineAvailability';
-import  FontAwesomeIconLib from '@fortawesome/vue-fontawesome'
-const { FontAwesomeIcon } = FontAwesomeIconLib;
 
 export default {
   name: 'SearchPlayer',
   components: {
     InlineAvailability,
-    FontAwesomeIcon,
     StatsCard
   },
   data() {

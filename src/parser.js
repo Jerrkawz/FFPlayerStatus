@@ -1,12 +1,6 @@
 import $ from 'jquery';
 import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue';
 import inlineAvailability from 'InlineAvailability';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faPlus, faTimes, faRandom } from '@fortawesome/free-solid-svg-icons';
-
-library.add(faPlus, faTimes, faRandom);
-Vue.use(BootstrapVue);
 
 const InlineAvailability = Vue.extend(inlineAvailability);
 Vue.component('inlineAvailability', InlineAvailability);

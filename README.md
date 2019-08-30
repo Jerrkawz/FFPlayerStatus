@@ -56,3 +56,6 @@ Known Issues:
 Closing Notes:
 At this point, I think I've talked enough and you should have a pretty good idea of how to setup and use the plugin. For the most part, it's worked pretty well for me. 
 For my own sanity, I also want to point out that, while I am a software developer by trade, I don't have a lot of experience in web development. Some of the code was pulled from an outdated plugin and may not be the newest, fanciest way of doing something. I'm also still developing, optimizing, and cleaning up the code. So, all that said, there will be bugs and the code is still pretty messy. I'm open to feedback, optimizations, and feature requests, but I'm also working on my own list of TODOs and optimizing as I can.
+
+#Legal Junk
+Icons from https://fontawesome.com/license no changes were made to icons.

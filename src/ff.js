@@ -22,6 +22,11 @@ export default class FF {
     return leagues;
   }
 
+  loadPlayers() {
+    window.playerDict = this.storage.get('global', 'playerDict') || {};
+    window.listOfPlayers = this.storage.get('global', 'listOfPlayers') || {};
+  }
+
   /** 
    * Parses team info from URL
    * Used by: fetchTakenPlayersForLeague

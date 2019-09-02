@@ -3,8 +3,8 @@ import FF from '../ff';
 
 let fantasyFind = new FF(new FFStorage());
 let settingsPort; // Port for communicating between settings and background
-window.listOfPlayers = window.listOfPlayers || {};
-window.playerDict = window.playerDict || {};
+
+fantasyFind.loadPlayers(); // Will setup window.playerDict and window.listOfPlayers
 
 chrome.runtime.onInstalled.addListener(function(details) {
   // Force install for latest update;
@@ -22,10 +22,6 @@ chrome.runtime.onInstalled.addListener(function(details) {
     } else {
       fantasyFind.setUserSettings({inline: true});
     }
-    // Don't get rid of the callback otherwise this won't work.
-    chrome.tabs.create({url: 'settings.html', active: true}, function() {});
-  } else if (details.reason === 'update') {
-    chrome.tabs.create({url: 'settings.html', active: true}, function() {});
   }
 
   // Setup alarm/timer for periodic league updates
@@ -85,7 +81,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         window.listOfPlayersInitESPN = request.site === 'espn';
         window.listOfPlayersInitYahoo = request.site === 'yahoo';
         //fantasyFind[request.site].resetLeagues();
-        fantasyFind[request.site].fetchAllPlayersForLeague(request.league, window.listOfPlayers, settingsPort);
+        fantasyFind[request.site].fetchAllPlayersForLeague(request.league, settingsPort);
       } else {
       // We know that the player list must have been updated, and we have the potential to have different ID's from 
       // different sites. So we need to create a mapping between the different site's IDs

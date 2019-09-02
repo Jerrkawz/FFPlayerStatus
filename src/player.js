@@ -1,7 +1,7 @@
 import $ from 'jquery';
 
 export default class Player {
-  constructor(id, name, team, pos, leagueId, site) {
+  constructor(id, name, team, pos, leagueId, site, profileImage) {
     this.id = id;
     this.name = name;
     this.leagueIds;
@@ -10,11 +10,7 @@ export default class Player {
     }
     this.team = team;
     const year = new Date().getFullYear();
-    if(site === 'espn') {
-      this._fetchEspnProfilePic(leagueId, year);
-      this.playerProfileUrl = 'http://espn.go.com/nfl/player/_/id/' + this.id + '/';
-    }
-    else if (site === 'yahoo') {
+    if (site === 'yahoo') {
       this._fetchYahooProfilePic(leagueId, year);
       this.playerProfileUrl = 'http://sports.yahoo.com/nfl/players/' + this.id;
     }
@@ -23,20 +19,10 @@ export default class Player {
     this.otherIds = {};
     this.leagueStatus = [];
     this.positions = pos;
+    this.profileImage = profileImage;
   }
 
   /* Private functions */
-  
-  _fetchEspnProfilePic(leagueId, year) {
-    $.ajax({
-      url: "http://games.espn.com/ffl/format/playerpop/overview?leagueId=" + leagueId + "&playerId=" + this.id + "&playerIdType=playerId&seasonId=" + year + "&xhr=1",
-      type: "GET",
-      success: function (response) {
-        this.profileImage = $(response).find('.mugshot img').attr('src');
-      }.bind(this)
-    });
-  }
-
   _fetchYahooProfilePic() {
     $.ajax({
       url: this.playerProfileUrl,

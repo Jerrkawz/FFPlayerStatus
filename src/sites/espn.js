@@ -4,6 +4,7 @@ import $ from 'jquery';
 import FantasyFilter from './utils/FantasyFilter';
 
 const BASE_URL = 'https://fantasy.espn.com/apis/v3/games/ffl/seasons/{0}/segments/0/leagues/{1}';
+const PROFILE_IMAGE = 'https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/{0}.png&w=96&h=70&cb=1';
 const PLAYER_URL = `${BASE_URL}?view=kona_player_info`;
 const SEASON_ID = 2019; // TODO fix
 
@@ -34,7 +35,7 @@ export default class Espn  extends Site {
         league.playerIdToTeamIndex = {};
 
         data.teams.forEach(team => {
-          league.shortNames.push(team.abbrev)
+          league.shortNames.push(team.abbrev);
         });
         callback(league);
       }.bind(this)
@@ -82,22 +83,21 @@ export default class Espn  extends Site {
           const currPlayerId = playerData.player.id;
           const owningTeamId = playerData.player.proTeamId;
           this.addPlayerMapping(league, currPlayerId, owningTeamId);
-
-          if (data.players.length === 50) {
-            opt_offset = (opt_offset || 0) + 50;
-            this._fetchTakenPlayersForLeague(league, opt_offset);
-          } else {
-            this.updateLocalLeague(league);
-            this.save();
-          }
-
         });
+
+        if (data.players.length === 50) {
+          opt_offset = (opt_offset || 0) + 50;
+          this._fetchTakenPlayersForLeague(league, opt_offset);
+        } else {
+          this.updateLocalLeague(league);
+          this.save();
+        }
       }.bind(this)
     });
 
   }
 
-  fetchAllPlayersForLeague(league, listOfPlayers, port, opt_offset) {
+  fetchAllPlayersForLeague(league, port, opt_offset) {
     const urlString = PLAYER_URL.replace('{0}', SEASON_ID).replace('{1}', league.leagueId);
     const builder = new FantasyFilter.Builder();
     const fantasyFilter = builder
@@ -116,26 +116,24 @@ export default class Espn  extends Site {
         'x-fantasy-filter': JSON.stringify(fantasyFilter)
       },
       success: function(data) {
-        debugger;
         data.players.forEach(playerData => {
-          const currPlayerId = playerData.id;
+          const currPlayerId = playerData.player.id;
           const name = playerData.player.fullName;
+          const profileImage = PROFILE_IMAGE.replace('{0}', currPlayerId);
           if (name.includes("D/ST")) {
-            const player = new Player(currPlayerId, name, null, "D/ST", league.leagueId, 'espn');
-            listOfPlayers[currPlayerId] = player;
+            const player = new Player(currPlayerId, name, null, "D/ST", league.leagueId, 'espn', profileImage);
             this.addPlayerToDict(player);
           } else {
             const team = playerData.player.proTeamId; // TODO map from pro team id to team name (either statically or dynamically)
             const pos = playerData.player.defaultPositionId; // TODO map from id to position name (either statically or dynamically)
-            const player = new Player(currPlayerId, name, team, pos, league.leagueId, 'espn');
-            listOfPlayers[currPlayerId] = player;
+            const player = new Player(currPlayerId, name, team, pos, league.leagueId, 'espn', profileImage);
             this.addPlayerToDict(player);
           }
         });
         if (data.players.length === 50) {
           opt_offset = (opt_offset || 0) + 50;
           // TODO re-enable after it works for page one
-          // this.fetchAllPlayersForLeague(league, listOfPlayers, port, opt_offset);
+          // this.fetchAllPlayersForLeague(league, port, opt_offset);
         } else {
           console.log("done");
           if(port !== undefined) {

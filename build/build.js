@@ -61,9 +61,19 @@ function build() {
   if (!isProduction()) {
     args.push('-m');
   }
+  if (shouldWatch) {
+    args.push('-w');
+
+    // Starting live reload
+    const lrPath = path.resolve('dist');
+    console.log(chalk`{green.inverse Starting live reload, watching ${lrPath}}`);
+    execa('livereload', lrPath);
+  }
+
   execa.sync('rollup', args, {
     stdio: 'inherit',
   });
+
 }
 
 function isProduction() {
@@ -71,4 +81,8 @@ function isProduction() {
     return false;
   }
   return process.env.PRODUCTION === 'true';
+}
+
+function shouldWatch() {
+  return process.env.WATCH === 'true';
 }

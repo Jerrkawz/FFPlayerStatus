@@ -130,12 +130,12 @@ export default {
     addLeague() {
       this.loadingLeagueId = this.leagueId;
       this.leagues.push({leagueId: this.leagueId, site: 'espn'}); // Temporary loading league
-      chrome.runtime.sendMessage({method: 'addTeam', site: 'espn', leagueId: this.leagueId}, function() {
+      chrome.runtime.sendMessage({method: 'addTeam', site: 'espn', leagueId: this.leagueId}, function(league) {
         debugger;
+        chrome.runtime.sendMessage({method: 'checkAllPlayers', site: 'espn', league}, function() {});
         this.leagues = this.ff.getLeaguesFromStorage();
         this.loadingLeagueId = null;
       }.bind(this));
-      chrome.runtime.sendMessage({method: 'checkAllPlayers', site: 'espn', leagueId: this.leagueId}, function() {});
     },
     removeLeague(leagueId) {
       chrome.runtime.sendMessage({method: 'removeTeam', site: 'espn', leagueId}, function(response){

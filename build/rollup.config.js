@@ -65,9 +65,18 @@ if (context.NODE_ENV === 'production') {
   plugins.push(uglify());
 }
 
+function getBackground() {
+  const backgrounds = ['src/background/background.js'];
+  if (context.NODE_ENV !== 'production') {
+    backgrounds.push('build/chromereload.js');
+  }
+
+  return backgrounds;
+}
+
 export default [
   {
-    input: 'src/background/background.js',
+    input: getBackground(),
     plugins,
     output: {
       name: 'background',

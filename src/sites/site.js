@@ -24,7 +24,7 @@ export default class Site {
   save() {
     this.ff.storage.setValue(this.site, {
       userId: this.site,
-      lastLogin: this.lastLogin
+      lastLogin: this.lastLogien
     });
     this.ff.storage.setValue(this.getSiteUserKey(), {'leagues': this.leagues});
   }
@@ -64,7 +64,7 @@ export default class Site {
       leaguesObject.push(league);
       this.ff.storage.set(this.getSiteUserKey(), 'leagues', leaguesObject);
       this.leagues.push(league);
-      callback();
+      callback(league);
     });
   }
 
@@ -100,10 +100,12 @@ export default class Site {
     }
     window.playerDict[lastName][firstName] = player;
     // For players like C.J. Anderson with .'s in their name, which some type and others don't...
-    if(firstName.indexOf(".")!== -1) {
+    if(firstName.indexOf(".") !== -1) {
       firstName = firstName.replace(/\./g, '');
       window.playerDict[lastName][firstName] = player;
     }
+    window.listOfPlayers[player.id] = player;
+    this.savePlayers();
   }
 
   getLeaguesFromStorage() {
@@ -123,5 +125,10 @@ export default class Site {
 
   getSiteUserKey() {
     return this.site;
+  }
+
+  savePlayers() {
+    this.ff.storage.set('global', 'playerDict', window.playerDict);
+    this.ff.storage.set('global', 'listOfPlayers', window.listOfPlayers);
   }
 }

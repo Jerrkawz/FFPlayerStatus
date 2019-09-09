@@ -116,12 +116,12 @@ export default {
 }
 
 .inline-availability-marker span {
-  display: inline;
   padding: 0 2px;
   color: white;
 }
 
 .inline-icon {
+  margin-right: 5px;
   height: 1em;
 }
 

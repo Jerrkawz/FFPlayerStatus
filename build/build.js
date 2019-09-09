@@ -61,7 +61,7 @@ function build() {
   if (!isProduction()) {
     args.push('-m');
   }
-  if (shouldWatch) {
+  if (shouldWatch()) {
     args.push('-w');
 
     // Starting live reload

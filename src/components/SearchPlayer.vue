@@ -11,7 +11,7 @@
     <InlineAvailability class="inline-availability" :player="player"></InlineAvailability>
     <div class="player-search-expand">
       <span class="expand-icon">
-        <!-- <FontAwesomeIcon icon='chevron-right'></FontAwesomeIcon> -->
+        <img src="images/chevron-right-solid.svg" height="16px" width="16px"/>
       </span>
     </div>
     </span>

@@ -42,7 +42,7 @@ export default {
       return this.player.leagueStatus.filter(status => status.status === 1).length;
     },
     addImage() {
-      return chrome.runtime.getURL('images/add-white.svg');
+      return chrome.runtime.getURL('images/plus-white.svg');
     },
     dropImage() {
       return chrome.runtime.getURL('images/times-white.svg');

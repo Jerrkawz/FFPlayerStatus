@@ -25,7 +25,6 @@ export default class Espn  extends Site {
         'Accept-Encoding': 'gzip, deflate',
       },
       success: function(data) {
-        debugger;
         const league = {};
         league.leagueId = leagueId;
         league.teamName = data.settings.name;
@@ -34,10 +33,17 @@ export default class Espn  extends Site {
         league.sport = 'football';
         league.playerIdToTeamIndex = {};
 
-        data.teams.forEach(team => {
-          league.shortNames.push(team.abbrev);
+        this._getTeamIdFromCookie((userId) => {
+          data.teams.forEach(team => {
+            league.shortNames.push(team.abbrev);
+            // Map the user Id from the cookie to a team id (0-12 or whatever)
+            debugger;
+            if (team.owners.includes(userId)) {
+              league.teamId = team.id;
+            }
+          });
+          callback(league);
         });
-        callback(league);
       }.bind(this)
     });
   }
@@ -80,8 +86,8 @@ export default class Espn  extends Site {
       },
       success: function(data) {
         data.players.forEach(playerData => {
+          const owningTeamId = playerData.onTeamId;
           const currPlayerId = playerData.player.id;
-          const owningTeamId = playerData.player.proTeamId;
           this.addPlayerMapping(league, currPlayerId, owningTeamId);
         });
 
@@ -132,8 +138,7 @@ export default class Espn  extends Site {
         });
         if (data.players.length === 50) {
           opt_offset = (opt_offset || 0) + 50;
-          // TODO re-enable after it works for page one
-          // this.fetchAllPlayersForLeague(league, port, opt_offset);
+          this.fetchAllPlayersForLeague(league, port, opt_offset);
         } else {
           console.log("done");
           if(port !== undefined) {
@@ -244,6 +249,20 @@ export default class Espn  extends Site {
 
     //ffl/freeagency?leagueId=264931&incoming=1&trans=2_11252_-1_1001_2_20'
     return this.baseUrl + 'ffl/freeagency?' + $.param(params);
+  }
+
+  async _getTeamIdFromCookie(callback) {
+    chrome.cookies.get({
+      url: 'https://fantasy.espn.com',
+      name: 'SWID'
+    }, function(cookie) {
+      // TODO error handling
+      if (!cookie || !cookie.value) {
+        throw new Error("Couldn't find user cookie. Are you logged in?");
+      }
+      const userId = cookie.value;
+      callback(userId);
+    });      
   }
 }
 

@@ -12,7 +12,8 @@
    "activeTab",
    "webNavigation",
    "tabs",
-   "http://*/",
+   "cookies",
+   "*://*/",
    "alarms"
  ],
  "background": {

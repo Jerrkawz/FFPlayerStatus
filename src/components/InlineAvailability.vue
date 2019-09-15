@@ -123,6 +123,7 @@ export default {
 .inline-icon {
   margin-right: 5px;
   height: 1em;
+  background-color: inherit;
 }
 
 /* Popover styles */

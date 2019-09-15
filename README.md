@@ -57,5 +57,20 @@ Closing Notes:
 At this point, I think I've talked enough and you should have a pretty good idea of how to setup and use the plugin. For the most part, it's worked pretty well for me. 
 For my own sanity, I also want to point out that, while I am a software developer by trade, I don't have a lot of experience in web development. Some of the code was pulled from an outdated plugin and may not be the newest, fanciest way of doing something. I'm also still developing, optimizing, and cleaning up the code. So, all that said, there will be bugs and the code is still pretty messy. I'm open to feedback, optimizations, and feature requests, but I'm also working on my own list of TODOs and optimizing as I can.
 
-#Legal Junk
+# Contrbuting
+Clone this repository
+> git clone git@github.com:Jerrkawz/FFPlayerStatus.git
+
+Install the deps
+> npm install
+
+Build
+> npm run build:dev
+
+Build and listen for file changes
+> npm run build:dev:watch
+
+Load unpacked extension and point chrome at the dist directory.
+
+# Legal Junk
 Icons from https://fontawesome.com/license. Some icon colors were changed to white (random, plus, remove2)

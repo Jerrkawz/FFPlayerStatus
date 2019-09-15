@@ -13,12 +13,12 @@
                 <img class="teamlist-icon" src="images/espn.png"/>
                 <img class="dropdown-arrow" src="images/chevron-down-solid.svg"/>
               </span>
-              <b-form-input id="teamlist_input" class="settings-input" placeholder="Enter League ID" v-model="leagueId" required></b-form-input>
+              <b-form-input id="teamlist_input" class="settings-input" placeholder="Enter Team Url" v-model="leagueUrl" required></b-form-input>
               <b-input-group>
                 <b-button type="submit" class="settings-button" variant="primary">Add</b-button>
               </b-input-group>
             </b-form>
-            <b-form-text text-variant="muted">Your league ID is typically from the URL. Click here for more information on locating league ID.</b-form-text>
+            <b-form-text text-variant="muted">The url from the My teams page in espn.</b-form-text>
           </b-form-group>
           <table class="table table-striped table-bordered teamlist_tbl">
             <tbody>
@@ -115,7 +115,7 @@ export default {
   },
   data: function() {
     return {
-      leagueId: '',
+      leagueUrl: '',
       leagues: [],
       loadingLeagueId: null,
       annotations: [],
@@ -128,10 +128,15 @@ export default {
   },
   methods: {
     addLeague() {
-      this.loadingLeagueId = this.leagueId;
-      this.leagues.push({leagueId: this.leagueId, site: 'espn'}); // Temporary loading league
-      chrome.runtime.sendMessage({method: 'addTeam', site: 'espn', leagueId: this.leagueId}, function(league) {
-        debugger;
+      const searchString = this.leagueUrl.substring(this.leagueUrl.indexOf("?"));
+      const params = new URLSearchParams(searchString);
+      const leagueId = params.get('leagueId');
+      const teamId = params.get('teamId');
+
+      this.loadingLeagueId = leagueId;
+      this.leagues.push({leagueId: leagueId, site: 'espn'}); // Temporary loading league
+
+      chrome.runtime.sendMessage({method: 'addTeam', site: 'espn', leagueId, teamId}, function(league) {
         chrome.runtime.sendMessage({method: 'checkAllPlayers', site: 'espn', league}, function() {});
         this.leagues = this.ff.getLeaguesFromStorage();
         this.loadingLeagueId = null;

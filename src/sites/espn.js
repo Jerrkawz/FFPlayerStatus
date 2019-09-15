@@ -13,7 +13,7 @@ export default class Espn  extends Site {
     super(ff, 'espn');
   }
 
-  initLeague(leagueId, callback) {
+  initLeague(leagueId, teamId, callback) {
     const urlString = BASE_URL.replace('{0}', SEASON_ID).replace('{1}', leagueId);
     $.ajax({
       url: urlString,
@@ -32,18 +32,12 @@ export default class Espn  extends Site {
         league.site = 'espn';
         league.sport = 'football';
         league.playerIdToTeamIndex = {};
-
-        this._getTeamIdFromCookie((userId) => {
-          data.teams.forEach(team => {
-            league.shortNames.push(team.abbrev);
-            // Map the user Id from the cookie to a team id (0-12 or whatever)
-            debugger;
-            if (team.owners.includes(userId)) {
-              league.teamId = team.id;
-            }
-          });
-          callback(league);
+        league.teamId = teamId;
+ 
+        data.teams.forEach(team => {
+          league.shortNames.push(team.abbrev);
         });
+        callback(league);
       }.bind(this)
     });
   }
@@ -249,20 +243,6 @@ export default class Espn  extends Site {
 
     //ffl/freeagency?leagueId=264931&incoming=1&trans=2_11252_-1_1001_2_20'
     return this.baseUrl + 'ffl/freeagency?' + $.param(params);
-  }
-
-  async _getTeamIdFromCookie(callback) {
-    chrome.cookies.get({
-      url: 'https://fantasy.espn.com',
-      name: 'SWID'
-    }, function(cookie) {
-      // TODO error handling
-      if (!cookie || !cookie.value) {
-        throw new Error("Couldn't find user cookie. Are you logged in?");
-      }
-      const userId = cookie.value;
-      callback(userId);
-    });      
   }
 }
 

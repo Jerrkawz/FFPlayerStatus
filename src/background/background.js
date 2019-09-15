@@ -65,7 +65,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       break;
     // Add team to local storage and get taken players
     case "addTeam":
-      fantasyFind[request.site].addUserTeam(request.leagueId, sendResponse);
+      fantasyFind[request.site].addUserTeam(request.leagueId, request.teamId, sendResponse);
       break;
 
     // Delete team from local storage and destroy league object

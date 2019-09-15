@@ -56,8 +56,8 @@ export default class Site {
     return false;
   }
 
-  addUserTeam(leagueId, callback) {
-    this.initLeague(leagueId, (league) => {
+  addUserTeam(leagueId, teamId, callback) {
+    this.initLeague(leagueId, teamId, (league) => {
       this.fetchTakenPlayers(league);
       let leaguesObject = this.ff.storage.get(this.getSiteUserKey(), 'leagues');
       leaguesObject = leaguesObject || [];

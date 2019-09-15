@@ -29,7 +29,7 @@
                 </a>
                 </td>
                 <td class="tl-teamname" :id="league.leagueId">
-                  {{league.teamName}}
+                  {{league.leagueName}}
                   <b-spinner v-if="league.leagueId == loadingLeagueId" label="loading" small variant="primary"></b-spinner>
                 </td>
                 <td class="teamlist_remove">

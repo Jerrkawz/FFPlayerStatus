@@ -23,7 +23,7 @@
         <div v-for="league in player.leagueStatus" :key="league.leagueId" class="league-row">
         <div class="league-row-padder">
           <div :class="league.site + ' site-icon'"></div>
-          <div class="league-name">Test League</div>
+          <div class="league-name">{{league.leagueName}}</div>
           <a class="ff-btn-link" :href="league.actionUrl" target="_blank">
             <button v-if="league.status === 1" type="button" class="btn btn-sm btn-success">Add <img class="small-icon" :src="addImage"/></button>
             <button v-if="league.status === 2" type="button" class="btn btn-sm btn-warning">Trade <img class="small-icon" :src="dropImage"/></button>
@@ -54,6 +54,7 @@ export default {
       this.activeTab = 'availability';
     },
     handleStatsClick() {
+      debugger;
       this.activeTab = 'stats';
     },
     isActive(tabName) {

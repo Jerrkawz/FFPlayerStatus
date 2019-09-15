@@ -27,7 +27,7 @@ export default class Espn  extends Site {
       success: function(data) {
         const league = {};
         league.leagueId = leagueId;
-        league.teamName = data.settings.name;
+        league.leagueName = data.settings.name;
         league.shortNames = [];
         league.site = 'espn';
         league.sport = 'football';
@@ -36,6 +36,10 @@ export default class Espn  extends Site {
  
         data.teams.forEach(team => {
           league.shortNames.push(team.abbrev);
+          debugger;
+          if (team.id == teamId) {
+            league.teamName = `${team.location} ${team.nickname}`;
+          }
         });
         callback(league);
       }.bind(this)

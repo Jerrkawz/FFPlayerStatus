@@ -7,7 +7,7 @@
  "icons": {
   "128": "images/ffplayerstatus-large.png"
  },
- "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; https://platform.twitter.com; https://connect.facebook.net; object-src 'self'",
+ "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
  "permissions": [
    "activeTab",
    "webNavigation",

@@ -204,40 +204,49 @@ export default class Espn  extends Site {
     });
   }
 
+
+  // TODO I cleaned them up but none of these urls work still, they must have changed over the years, need to find the new ones
   buildDropUrl(playerId, league) {
+    const { leagueId, teamId } = league;
     const params = {
-      leagueId: league.leagueId,
-      teamId: league.teamId,
+      leagueId,
+      teamId,
       incoming: 1,
-      trans: '3_' + playerId + '_' + league.teamId + '_20_-1_1001'
+      trans: `3_${playerId}_${league.teamId}_20_-1_1001`
     };
 
+    const urlString = BASE_URL.replace('{0}', SEASON_ID).replace('{1}', leagueId);
+
     //ffl/clubhouse?leagueId=291420&teamId=1&incoming=1&trans=3_1428_1_20_-1_1001')
-    return BASE_URL + 'ffl/clubhouse?' + $.param(params);
+    return `${urlString}/ffl/clubhouse?${$.param(params)}`;
   }
 
   buildTradeUrl(playerId, ownedByTeamId, league) {
+    const { leagueId } = league;
     const params = {
       teamId: ownedByTeamId,
-      leagueId: league.leagueId,
-      trans: '4_' + playerId + '_'
+      leagueId,
+      trans: `4_${playerId}_`
     };
 
+    const urlString = BASE_URL.replace('{0}', SEASON_ID).replace('{1}', leagueId);
+
     //ffl/trade?teamId=1&leagueId=264931&trans=4_10452_
-    return BASE_URL + 'ffl/trade?' + $.param(params);
+    return `${urlString}/ffl/trade?${$.param(params)}`;
   }
 
   buildFreeAgentUrl(playerId, league) {
+    const { leagueId, teamId } = league;
     const params = {
       incoming: 1,
-      leagueId: league.leagueId,
-      trans: '2_' + playerId + '_-1_1001_' + league.teamId + '_20'
+      leagueId,
+      trans: `2_${playerId}_-1_1001_${teamId}_20`
     };
 
-    //ffl/freeagency?leagueId=264931&incoming=1&trans=2_8416_-1_1001_1_20'
+    const urlString = BASE_URL.replace('{0}', SEASON_ID).replace('{1}', leagueId);
 
     //ffl/freeagency?leagueId=264931&incoming=1&trans=2_11252_-1_1001_2_20'
-    return BASE_URL + 'ffl/freeagency?' + $.param(params);
+    return `${urlString}/ffl/freeagency?${$.param(params)}`;
   }
 }
 

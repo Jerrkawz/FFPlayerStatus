@@ -67,6 +67,7 @@ export default class FF {
       }
       const ownedByTeamId = league.playerIdToTeamIndex[idForSite];
   
+      debugger;
       if (ownedByTeamId) {
         playerStatus.ownedByTeamName = league.shortNames[ownedByTeamId];
         if (ownedByTeamId === teamId) {

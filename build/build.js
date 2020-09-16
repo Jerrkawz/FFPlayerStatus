@@ -9,11 +9,10 @@ const fs = require('fs');
 
 // Create directories
 shell.mkdir('-p', 'dist');
-shell.mkdir('-p', 'dist/css');
 
 // Copy images
 console.log(chalk`{green.inverse Copying Images}`);
-shell.cp('-R', 'images/', 'dist/images');
+shell.cp('-R', 'images/', 'dist/');
 
 // Minify and copy html
 console.log(chalk`{green.inverse Minifying HTML}`);
@@ -77,12 +76,9 @@ function build() {
 }
 
 function isProduction() {
-  if (!process.env.PRODUCTION && !process.env.isDevelopment) {
-    return false;
-  }
-  return process.env.PRODUCTION === 'true';
+  return process.argv.includes('--prod')
 }
 
 function shouldWatch() {
-  return process.env.WATCH === 'true';
+  return process.argv.includes('--watch')
 }

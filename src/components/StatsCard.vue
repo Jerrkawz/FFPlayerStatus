@@ -26,8 +26,8 @@
           <div class="league-name">{{league.leagueName}}</div>
           <a class="ff-btn-link" :href="league.actionUrl" target="_blank">
             <button v-if="league.status === 1" type="button" class="btn btn-sm btn-success">Add <img class="small-icon" :src="addImage"/></button>
-            <button v-if="league.status === 2" type="button" class="btn btn-sm btn-warning">Trade <img class="small-icon" :src="dropImage"/></button>
-            <button v-if="league.status === 3" type="button" class="btn btn-sm btn-danger">Drop <img class="small-icon" :src="tradeImage"/></button>
+            <button v-if="league.status === 2" type="button" class="btn btn-sm btn-danger">Drop <img class="small-icon" :src="dropImage"/></button>
+            <button v-if="league.status === 3" type="button" class="btn btn-sm btn-warning">Trade <img class="small-icon" :src="tradeImage"/></button>
           </a>
         </div>
       </div>
@@ -54,7 +54,6 @@ export default {
       this.activeTab = 'availability';
     },
     handleStatsClick() {
-      debugger;
       this.activeTab = 'stats';
     },
     isActive(tabName) {
@@ -75,8 +74,14 @@ export default {
 }
 </script>
 <style scoped>
+
+.stats-table {
+  padding: 2px;
+}
+
 .stats-card .player-info {
-  display:flex; 
+  display: flex; 
+  background: rgba(0,0,0,.03);
 }
 
 .stats-card .player-img {
@@ -121,6 +126,7 @@ export default {
   height: 10px;
   margin-top: 9px;
   display: inline-block;
+  padding-left: 5px;
 }
 .stats-card .site-icon.espn {
   background: url('images/espn.png');

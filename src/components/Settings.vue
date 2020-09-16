@@ -130,8 +130,8 @@ export default {
     addLeague() {
       const searchString = this.leagueUrl.substring(this.leagueUrl.indexOf("?"));
       const params = new URLSearchParams(searchString);
-      const leagueId = params.get('leagueId');
-      const teamId = params.get('teamId');
+      const leagueId = parseInt(params.get('leagueId'), 10);
+      const teamId = parseInt(params.get('teamId'), 10);
 
       this.loadingLeagueId = leagueId;
       this.leagues.push({leagueId: leagueId, site: 'espn'}); // Temporary loading league

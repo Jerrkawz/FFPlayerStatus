@@ -155,7 +155,6 @@ export default {
 }
 
 .popover-body {
-  padding: .5rem .75rem;
   color: #212529;
 }
 

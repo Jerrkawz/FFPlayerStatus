@@ -6,11 +6,11 @@ import FantasyFilter from './utils/FantasyFilter';
 const BASE_URL = 'https://fantasy.espn.com/apis/v3/games/ffl/seasons/{0}/segments/0/leagues/{1}';
 const PROFILE_IMAGE = 'https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/{0}.png&w=96&h=70&cb=1';
 const PLAYER_URL = `${BASE_URL}?view=kona_player_info`;
-const SEASON_ID = 2019; // TODO fix
+const SEASON_ID = 2020; // TODO fix
 
 export default class Espn  extends Site {
   constructor(ff) {
-    super(ff, 'espn');
+    super(ff, 'espn');se
   }
 
   initLeague(leagueId, teamId, callback) {
@@ -19,10 +19,7 @@ export default class Espn  extends Site {
       url: urlString,
       data: 'text',
       headers: {
-        'User-Agent': 'FF_Finder/2.0.0',
         'Accept': '*/*',
-        'Host': 'fantasy.espn.com',
-        'Accept-Encoding': 'gzip, deflate',
       },
       success: function(data) {
         const league = {};
@@ -76,10 +73,7 @@ export default class Espn  extends Site {
       url: urlString,
       data: 'text',
       headers: {
-        'User-Agent': 'FF_Finder/2.0.0',
         'Accept': '*/*',
-        'Host': 'fantasy.espn.com',
-        'Accept-Encoding': 'gzip, deflate',
         'x-fantasy-filter': JSON.stringify(fantasyFilter)
       },
       success: function(data) {
@@ -113,10 +107,7 @@ export default class Espn  extends Site {
       url: urlString,
       data: 'text',
       headers: {
-        'User-Agent': 'FF_Finder/2.0.0',
         'Accept': '*/*',
-        'Host': 'fantasy.espn.com',
-        'Accept-Encoding': 'gzip, deflate',
         'x-fantasy-filter': JSON.stringify(fantasyFilter)
       },
       success: function(data) {
@@ -222,7 +213,7 @@ export default class Espn  extends Site {
     };
 
     //ffl/clubhouse?leagueId=291420&teamId=1&incoming=1&trans=3_1428_1_20_-1_1001')
-    return this.baseUrl + 'ffl/clubhouse?' + $.param(params);
+    return BASE_URL + 'ffl/clubhouse?' + $.param(params);
   }
 
   buildTradeUrl(playerId, ownedByTeamId, league) {
@@ -233,7 +224,7 @@ export default class Espn  extends Site {
     };
 
     //ffl/trade?teamId=1&leagueId=264931&trans=4_10452_
-    return this.baseUrl + 'ffl/trade?' + $.param(params);
+    return BASE_URL + 'ffl/trade?' + $.param(params);
   }
 
   buildFreeAgentUrl(playerId, league) {
@@ -246,7 +237,7 @@ export default class Espn  extends Site {
     //ffl/freeagency?leagueId=264931&incoming=1&trans=2_8416_-1_1001_1_20'
 
     //ffl/freeagency?leagueId=264931&incoming=1&trans=2_11252_-1_1001_2_20'
-    return this.baseUrl + 'ffl/freeagency?' + $.param(params);
+    return BASE_URL + 'ffl/freeagency?' + $.param(params);
   }
 }
 

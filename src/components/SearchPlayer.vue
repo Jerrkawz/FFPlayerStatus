@@ -117,7 +117,6 @@ export default {
     border-radius: 0.25rem;
     box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3);
     margin: 10px 5px;
-    padding: 0px 5px 5px 5px;
     font-size: 14px;
 }
 </style>

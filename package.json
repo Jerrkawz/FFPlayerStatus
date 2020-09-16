@@ -50,7 +50,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:dev": "node ./build/build.js",
-    "build:dev:watch": "WATCH=true ./build/build.js",
+    "build:dev:watch": "node ./build/build.js --watch",
     "live-reload": "livereload dist/",
     "clean": "rimraf dist"
   },

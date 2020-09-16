@@ -66,13 +66,12 @@ export default class FF {
         idForSite = player.otherIds[league.site];
       }
       const ownedByTeamId = league.playerIdToTeamIndex[idForSite];
-  
-      debugger;
+
       if (ownedByTeamId) {
         playerStatus.ownedByTeamName = league.shortNames[ownedByTeamId];
         if (ownedByTeamId === teamId) {
           playerStatus.status = DROP;
-          playerStatus.actionUrl = this[league.site].buildDropUrl(idForSite, league);
+          playerStatus.actionUrl = this[league.site].buildDropUrl(league);
         } else {
           playerStatus.status = TRADE;
           playerStatus.actionUrl = this[league.site].buildTradeUrl(idForSite, ownedByTeamId, league);

@@ -3,10 +3,13 @@ import Player from '../player';
 import $ from 'jquery';
 import FantasyFilter from './utils/FantasyFilter';
 
+const SEASON_ID = 2020; // TODO fix
 const BASE_URL = 'https://fantasy.espn.com/apis/v3/games/ffl/seasons/{0}/segments/0/leagues/{1}';
+const ADD_URL = `https://fantasy.espn.com/football/rosterfix?leagueId={0}&seasonId=${SEASON_ID}&teamId={1}&players={2}&type=claim`;
+const DROP_URL = `https://fantasy.espn.com/football/rosterfix?leagueId={0}&seasonId=${SEASON_ID}&teamId={1}&type=drop`
+const TRADE_URL = `https://fantasy.espn.com/football/team/trade?leagueId={0}&seasonId=${SEASON_ID}&teamId={1}&fromTeamId={2}&step=1&players={3}`
 const PROFILE_IMAGE = 'https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/{0}.png&w=96&h=70&cb=1';
 const PLAYER_URL = `${BASE_URL}?view=kona_player_info`;
-const SEASON_ID = 2020; // TODO fix
 
 export default class Espn  extends Site {
   constructor(ff) {
@@ -204,49 +207,36 @@ export default class Espn  extends Site {
     });
   }
 
-
-  // TODO I cleaned them up but none of these urls work still, they must have changed over the years, need to find the new ones
-  buildDropUrl(playerId, league) {
+  // TODO this is a little hacky, it just sends you to the rosterfix page instead of dropping the player directly. Its not url addressable from what i could tell
+  // so we would have to build a confirm modal if we used the direct call
+  buildDropUrl(league) {
     const { leagueId, teamId } = league;
-    const params = {
-      leagueId,
-      teamId,
-      incoming: 1,
-      trans: `3_${playerId}_${league.teamId}_20_-1_1001`
-    };
-
-    const urlString = BASE_URL.replace('{0}', SEASON_ID).replace('{1}', leagueId);
-
-    //ffl/clubhouse?leagueId=291420&teamId=1&incoming=1&trans=3_1428_1_20_-1_1001')
-    return `${urlString}/ffl/clubhouse?${$.param(params)}`;
+  
+    // https://fantasy.espn.com/football/rosterfix?leagueId=88495909&seasonId=2020&teamId=1&players=2570986&type=claim
+    return DROP_URL
+      .replace('{0}', leagueId)
+      .replace('{1}', teamId);
   }
 
   buildTradeUrl(playerId, ownedByTeamId, league) {
-    const { leagueId } = league;
-    const params = {
-      teamId: ownedByTeamId,
-      leagueId,
-      trans: `4_${playerId}_`
-    };
+    const { leagueId, teamId } = league;
 
-    const urlString = BASE_URL.replace('{0}', SEASON_ID).replace('{1}', leagueId);
-
-    //ffl/trade?teamId=1&leagueId=264931&trans=4_10452_
-    return `${urlString}/ffl/trade?${$.param(params)}`;
+    // https://fantasy.espn.com/football/team/trade?leagueId=88495909&seasonId=2020&teamId=5&fromTeamId=1&step=1&players=3139477
+    return TRADE_URL
+      .replace('{0}', leagueId)
+      .replace('{1}', ownedByTeamId)
+      .replace('{2}', teamId)
+      .replace('{3}', playerId);
   }
 
   buildFreeAgentUrl(playerId, league) {
     const { leagueId, teamId } = league;
-    const params = {
-      incoming: 1,
-      leagueId,
-      trans: `2_${playerId}_-1_1001_${teamId}_20`
-    };
 
-    const urlString = BASE_URL.replace('{0}', SEASON_ID).replace('{1}', leagueId);
-
-    //ffl/freeagency?leagueId=264931&incoming=1&trans=2_11252_-1_1001_2_20'
-    return `${urlString}/ffl/freeagency?${$.param(params)}`;
+    // https://fantasy.espn.com/football/rosterfix?leagueId=88495909&seasonId=2020&teamId=1&players=2570986&type=claim
+    return ADD_URL
+      .replace('{0}', leagueId)
+      .replace('{1}', teamId)
+      .replace('{2}', playerId);
   }
 }
 

@@ -20,6 +20,7 @@
             </b-form>
             <b-form-text text-variant="muted">The url from the My teams page in espn.</b-form-text>
           </b-form-group>
+          <b-button type="submit" class="settings-button" variant="primary" @click="testOAuth">Test OAuth</b-button>
           <table class="table table-striped table-bordered teamlist_tbl">
             <tbody>
               <tr v-for="league in leagues" :key="league.leagueId">
@@ -97,6 +98,27 @@ import FF from '../ff'
 import $ from 'jquery'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import secrets from '../../secrets.js'
+
+function fetchOauthTokens(code) {
+  const encodedRedirectUri = encodeURIComponent(chrome.identity.getRedirectURL("oauth2"));
+  fetch('https://api.login.yahoo.com/oauth2/get_token', {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Authorization': `Basic ${btoa(`${secrets.client_id}:${secrets.client_secret}`)}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: `grant_type=authorization_code&redirect_uri=${encodedRedirectUri}&code=${code}`
+
+  }).then(response => {
+    if (response.status === 200) {
+      response.json().then(data => {
+        debugger;
+      })
+    }
+  });
+}
 
 export default {
   name: 'Settings',
@@ -156,6 +178,20 @@ export default {
           rosterAnnotations: selected.includes('rosterAnnotations')
         }
 			});
+    },
+    testOAuth() {
+      debugger;
+      const redirectUri = chrome.identity.getRedirectURL("oauth2");
+      chrome.identity.launchWebAuthFlow({'url': `https://api.login.yahoo.com/oauth2/request_auth?client_id=dj0yJmk9bTE2VHFIczJYUzB0JmQ9WVdrOVZtdHZSR1YxVGswbWNHbzlNQT09JnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTk0&redirect_uri=${redirectUri}&response_type=code&language=en-us`, 'interactive': true}, function (redirectUrl) {
+        if (redirectUrl) {
+          debugger;
+          var code = redirectUrl.substr(redirectUrl.indexOf('?')+6);
+          fetchOauthTokens(code)
+          return; // call the original callback now that we've intercepted what we needed
+        } else {
+          return;
+        }
+      });
     }
   }
 };

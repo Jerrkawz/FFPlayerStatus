@@ -14,7 +14,8 @@
    "tabs",
    "cookies",
    "*://*/",
-   "alarms"
+   "alarms",
+   "identity"
  ],
  "background": {
    "page": "background.html"

@@ -13,7 +13,7 @@ const PLAYER_URL = `${BASE_URL}?view=kona_player_info`;
 
 export default class Espn  extends Site {
   constructor(ff) {
-    super(ff, 'espn');se
+    super(ff, 'espn');
   }
 
   initLeague(leagueId, teamId, callback) {

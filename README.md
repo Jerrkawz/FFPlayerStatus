@@ -74,3 +74,4 @@ Load unpacked extension and point chrome at the dist directory.
 
 # Legal Junk
 Icons from https://fontawesome.com/license. Some icon colors were changed to white (random, plus, remove2)
+Football icon from https://icons8.com/icons/set/football

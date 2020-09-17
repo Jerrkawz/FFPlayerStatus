@@ -10,30 +10,29 @@
           <b-form-group>
             <b-form inline @submit.prevent="addLeague">
               <span class="site-picker">
-                <img class="teamlist-icon" src="images/espn.png"/>
-                <img class="dropdown-arrow" src="images/chevron-down-solid.svg"/>
+                <img class="site-icon" :src="leagueIcon"/>
               </span>
-              <b-form-input id="teamlist_input" class="settings-input" placeholder="Enter Team Url" v-model="leagueUrl" required></b-form-input>
+              <b-form-input id="site_input" class="settings-input" placeholder="Enter Team Url" v-model="leagueUrl" required></b-form-input>
               <b-input-group>
                 <b-button type="submit" class="settings-button" variant="primary">Add</b-button>
               </b-input-group>
             </b-form>
-            <b-form-text text-variant="muted">The url from the My teams page in espn.</b-form-text>
+            <b-form-text text-variant="muted">The url from the My teams page. Currently only supports yahoo and espn.</b-form-text>
           </b-form-group>
           <b-button type="submit" class="settings-button" variant="primary" @click="testOAuth">Test OAuth</b-button>
-          <table class="table table-striped table-bordered teamlist_tbl">
+          <table class="table table-striped table-bordered site_tbl">
             <tbody>
               <tr v-for="league in leagues" :key="league.leagueId">
-                <td class="teamlist">
+                <td class="site">
                 <a :href="league.url">
-                  <img class="teamlist-icon" :src="'images/' + league.site + '.png'"/>
+                  <img class="site-icon" :src="'images/' + league.site + '.png'"/>
                 </a>
                 </td>
                 <td class="tl-teamname" :id="league.leagueId">
                   {{league.leagueName}}
                   <b-spinner v-if="league.leagueId == loadingLeagueId" label="loading" small variant="primary"></b-spinner>
                 </td>
-                <td class="teamlist_remove">
+                <td class="site_remove">
                   <img src="images/times-solid.svg" @click="removeLeague(league.leagueId)" class="team_remove_icon"/>
                 </td>
               </tr>
@@ -122,6 +121,16 @@ function fetchOauthTokens(code) {
 
 export default {
   name: 'Settings',
+  computed: {
+    leagueIcon() {
+      if (this.leagueUrl.includes('espn.com')) {
+        return 'images/espn.png';
+      } else if (this.leagueUrl.includes('yahoo.com')) {
+        return 'images/yahoo.png';
+      }
+      return 'images/football.png';
+    }
+  },
   created: function() {
     this.ff = new FF();
     this.leagues = this.ff.getLeaguesFromStorage();
@@ -182,7 +191,7 @@ export default {
     testOAuth() {
       debugger;
       const redirectUri = chrome.identity.getRedirectURL("oauth2");
-      chrome.identity.launchWebAuthFlow({'url': `https://api.login.yahoo.com/oauth2/request_auth?client_id=dj0yJmk9bTE2VHFIczJYUzB0JmQ9WVdrOVZtdHZSR1YxVGswbWNHbzlNQT09JnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTk0&redirect_uri=${redirectUri}&response_type=code&language=en-us`, 'interactive': true}, function (redirectUrl) {
+      chrome.identity.launchWebAuthFlow({'url': `https://api.login.yahoo.com/oauth2/request_auth?client_id=${secrets.client_id}&redirect_uri=${redirectUri}&response_type=code&language=en-us`, 'interactive': true}, function (redirectUrl) {
         if (redirectUrl) {
           debugger;
           var code = redirectUrl.substr(redirectUrl.indexOf('?')+6);
@@ -201,20 +210,11 @@ export default {
 <style scoped>
 
 .site-picker {
-  padding: 6px;
   height: 38px;
   border: 1px solid #dee2e6;
   border-radius: 3px;
   margin-right: 5px;
   display: flex;
-}
-
-.dropdown-arrow {
-  height: 12px;
-  width: 12px;
-  margin-left: 5px;
-  margin-top: auto;
-  margin-bottom: auto;
 }
 
 .card-header {
@@ -231,11 +231,11 @@ export default {
   vertical-align: top;
 }
 
-td.teamlist {
+td.site {
   width: 1px;
 }
 
-td.teamlist_remove {
+td.site_remove {
   text-align: center;
   width: 50px;
 }
@@ -246,16 +246,17 @@ td.teamlist_remove {
   cursor: pointer;
 }
 
-.teamlist-icon {
-  height: 20px;
-  width: 20px;
+.site-icon {
+  padding: 5px;
+  height: 38px;
+  width: 38px;
 }
 
 .tl-teamname {
   text-align: center;
 }
 
-.teamlist_tbl {
+.site_tbl {
   width: 560px;
 }
 

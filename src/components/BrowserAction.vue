@@ -41,7 +41,7 @@ export default {
           return;
         }
 
-        chrome.extension.sendMessage({method: 'playerSearch', query: this.searchValue}, response => {
+        chrome.extension.sendMessage({method: 'playerSearch', query: this.searchValue.toLowerCase()}, response => {
             this.players = response.results.sort((result1, result2) => {
               if (result1.name < result2.name) return -1;
               if (result1.name > result2.name) return 1;

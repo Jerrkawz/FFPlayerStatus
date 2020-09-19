@@ -2,6 +2,7 @@ import Site from './site';
 import Player from '../player';
 import $ from 'jquery';
 import FantasyFilter from './utils/FantasyFilter';
+import defenseNameMapping from './utils/defenseIdToShortName';
 
 const SEASON_ID = 2020; // TODO fix
 const BASE_URL = 'https://fantasy.espn.com/apis/v3/games/ffl/seasons/{0}/segments/0/leagues/{1}';
@@ -9,6 +10,7 @@ const ADD_URL = `https://fantasy.espn.com/football/rosterfix?leagueId={0}&season
 const DROP_URL = `https://fantasy.espn.com/football/rosterfix?leagueId={0}&seasonId=${SEASON_ID}&teamId={1}&type=drop`
 const TRADE_URL = `https://fantasy.espn.com/football/team/trade?leagueId={0}&seasonId=${SEASON_ID}&teamId={1}&fromTeamId={2}&step=1&players={3}`
 const PROFILE_IMAGE = 'https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/{0}.png&w=96&h=70&cb=1';
+const DEFENSE_IMAGE = 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/{0}.png&h=150&w=150&w=96&h=70&cb=1';
 const PLAYER_URL = `${BASE_URL}?view=kona_player_info`;
 
 export default class Espn  extends Site {
@@ -36,7 +38,6 @@ export default class Espn  extends Site {
  
         data.teams.forEach(team => {
           league.shortNames.push(team.abbrev);
-          debugger;
           if (team.id == teamId) {
             league.teamName = `${team.location} ${team.nickname}`;
           }
@@ -117,11 +118,14 @@ export default class Espn  extends Site {
         data.players.forEach(playerData => {
           const currPlayerId = playerData.player.id;
           const name = playerData.player.fullName;
-          const profileImage = PROFILE_IMAGE.replace('{0}', currPlayerId);
+          
           if (name.includes("D/ST")) {
+            const shortName = defenseNameMapping[currPlayerId];
+            const profileImage = DEFENSE_IMAGE.replace('{0}', shortName);
             const player = new Player(currPlayerId, name, null, "D/ST", league.leagueId, 'espn', profileImage);
             this.addPlayerToDict(player);
           } else {
+            const profileImage = PROFILE_IMAGE.replace('{0}', currPlayerId);
             const team = playerData.player.proTeamId; // TODO map from pro team id to team name (either statically or dynamically)
             const pos = playerData.player.defaultPositionId; // TODO map from id to position name (either statically or dynamically)
             const player = new Player(currPlayerId, name, team, pos, league.leagueId, 'espn', profileImage);

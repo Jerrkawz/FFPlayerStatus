@@ -2,6 +2,8 @@ import $ from 'jquery';
 import Vue from 'vue';
 import inlineAvailability from 'InlineAvailability';
 
+const DEBOUNCE = 500; // ms
+
 const InlineAvailability = Vue.extend(inlineAvailability);
 Vue.component('inlineAvailability', InlineAvailability);
 
@@ -251,4 +253,20 @@ evaluateUrl(function() {
       injectMarkup();
     });
   });
+});
+
+let timeout;
+let observer = new MutationObserver(() => {
+  if(timeout) {
+    clearTimeout(timeout);
+  }
+  timeout = setTimeout(() => {
+    console.log('Injecting markup');
+    injectMarkup();
+  }, DEBOUNCE);
+});
+
+observer.observe(document.querySelector('body'), {
+  childList: true,
+  subtree: true, // and lower descendants too
 });

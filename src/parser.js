@@ -3,6 +3,7 @@ import Vue from 'vue';
 import inlineAvailability from 'InlineAvailability';
 
 const DEBOUNCE = 500; // ms
+const PARENT_BLOCKLIST = ['ff-name', 'player-search-name'];
 
 const InlineAvailability = Vue.extend(inlineAvailability);
 Vue.component('inlineAvailability', InlineAvailability);
@@ -57,7 +58,7 @@ function injectMarkup(inNodes) {
     const parts =  node.nodeValue.split(/\s/);
     let text = $(node).text();
     const parent = node.parentElement;
-    if(parent.getAttribute('class') === "ff-name") return;
+    if(PARENT_BLOCKLIST.includes(parent.getAttribute('class'))) return;
     let changed = false;
     for (let i = 0; i < parts.length; i++) {
       // This includes  ` and . - which break a.j. green da`quan etc..
